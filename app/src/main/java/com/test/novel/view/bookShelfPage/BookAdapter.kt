@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.test.novel.R
 import com.test.novel.databinding.BookItemBinding
-import com.test.novel.model.Book
+import com.test.novel.database.bookShelf.Book
 
 class BookAdapter(private val bookList: List<Book>) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 

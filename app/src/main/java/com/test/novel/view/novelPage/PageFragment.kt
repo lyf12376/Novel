@@ -7,8 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.test.novel.R
 import com.test.novel.databinding.FragmentPageBinding
+import com.test.novel.utils.SizeUtils
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,6 +25,7 @@ private const val ARG_PARAM1 = "text"
 class PageFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var text: String? = ""
+    private lateinit var sharedViewModel: NovelFragmentViewModel
 //    private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,30 +48,52 @@ class PageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentPageBinding.bind(view)
         val novelText = binding.novelText
+        sharedViewModel =
+            ViewModelProvider(requireParentFragment())[NovelFragmentViewModel::class.java]
         novelText.post {
-            val width = binding.novelText.width - binding.novelText.paddingLeft - binding.novelText.paddingRight
-            val textSize = binding.novelText.textSize
+            val width = novelText.width - novelText.paddingLeft - novelText.paddingRight
+            val height = novelText.height - novelText.paddingTop - novelText.paddingBottom
+            val example = """${"\u3000\u3000"}神州历9999年秋，东海，青州城。
+${"\u3000\u3000"}青州学宫，青州城圣地，青州城豪门贵族以及宗门世家内半数以上的强者，都从青州学宫走出。
+${"\u3000\u3000"}因而，青州城之人皆以能够入学宫中修行为荣，旦有机会踏入学宫，必刻苦求学。
+${"\u3000\u3000"}然而，似乎并非所有人都有此觉悟。
+${"\u3000\u3000"}此时在青州学宫的一间学舍中，便有一位少年正趴在桌上熟睡。
+${"\u3000\u3000"}讲堂之上，一身穿青衣长裙的少女也注意到了这一幕，俏脸上不由浮现一抹怒意，迈开脚步朝着正在睡梦中的少年走去。
+${"\u3000\u3000"}秦伊，十七岁，青州学院正式弟子，外门弟子讲师，容颜美貌，身材火爆。
+${"\u3000\u3000"}学舍中，一双双眼睛随着秦伊的动人身姿一起移动着，哪怕是生气，秦伊迈出的步伐依旧优雅。"""
 
-            val example = "对开发者来说放弃 Google Play 其实也不算是太大的问题，毕竟这是开源软件又不需要通过 Google Play 付费购买。\n" +
-                    "\n" +
-                    "所以这也是为什么说谷歌审核只是导火索，说到底还是开发者已经累了，另一位 Syncthing 主要维护者称该应用长期处于支持状态也就是能用但已经没有添加新功能。\n" +
-                    "\n" +
-                    "最终结果就是开发者彻底放弃这个项目不再开发，尽管目前还能用但不会再修复 BUG 以及适配后续的 Android 新版本，可能会对用户的使用产生影响。\n" +
-                    "\n" +
-                    "最后同类软件还有 SyncTrayzor 不过也处于非活跃开发阶段，所以不知道是否会有开发者接手 Syncthing 的开发让这款应用能够继续使用。"
             // 获取 Paint 对象以测量字符宽度
             novelText.text = example
-            val textPaint: TextPaint = binding.novelText.paint
-
-            val exampleCharWidth = textPaint.measureText(example)  // 假设以汉字测量字符宽度
-            println("exampleCharWidth: $exampleCharWidth")
-            // 计算每行最多能容纳的字符数
-            val maxCharsPerLine = (width / exampleCharWidth).toInt()
-
-            println(novelText.lineCount)
-            println("TextView宽度: $width")
-            println("字体大小: $textSize px")
-            println("每行最多字符数: $maxCharsPerLine")
+            val list = example.split("\n")
+            var pageText = ""
+            val pageLines = SizeUtils.getPageLineCount(novelText)
+            println(pageLines)
+            var nowLines = 0
+            val textPaint = novelText.paint
+            var lastCharIndex = Pair(0, 0)
+            list.forEachIndexed { index, s ->
+                val length = s.length
+                var left = 0
+                for (i in 0 until length) {
+                    val textWidth = textPaint.measureText(s, left, i + 1)
+                    if (i == length - 1 && textWidth > 0) {
+                        nowLines++
+                        pageText += s.substring(left, i + 1) + "\n"
+                        println(s.substring(left, i + 1))
+                    }
+                    if (textWidth >= width) {
+                        println("$index $i $left")
+                        println(s.substring(left, i))
+                        pageText += s.substring(left, i) + "\n"
+                        left = i
+                        nowLines++
+                    }
+                    if (nowLines == pageLines) {
+                        return@forEachIndexed
+                    }
+                }
+            }
+            novelText.text = pageText
         }
     }
 

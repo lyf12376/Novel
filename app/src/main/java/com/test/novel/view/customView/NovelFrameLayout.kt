@@ -20,7 +20,7 @@ class NovelFrameLayout @JvmOverloads constructor(
 //            Log.d("TAG", "dispatchTouchEvent: ")
 //            return true
 //        }
-        Log.d("TAG", "dispatchTouchEvent: $ev")
+//        Log.d("TAG", "dispatchTouchEvent: $ev")
         return super.dispatchTouchEvent(ev)
     }
 
@@ -46,20 +46,20 @@ class NovelFrameLayout @JvmOverloads constructor(
                             x < screenWidth / 3 -> {
                                 // 点击在左侧
                                 clickList[0]()
-                                Log.d("TAG", "onTouchEvent: l")
+//                                Log.d("TAG", "onTouchEvent: l")
                             }
                             x < 2 * screenWidth / 3 -> {
                                 // 点击在中间
                                 clickList[1]()
-                                Log.d("TAG", "onTouchEvent: m")
+//                                Log.d("TAG", "onTouchEvent: m")
                             }
                             else -> {
                                 // 点击在右侧
                                 clickList[2]()
-                                Log.d("TAG", "onTouchEvent: r")
+//                                Log.d("TAG", "onTouchEvent: r")
                             }
                         }
-                        Log.d("TAG", "onInterceptTouchEvent: intercept")
+//                        Log.d("TAG", "onInterceptTouchEvent: intercept")
                         isSingleTap = 0
                         return true
                     }

@@ -3,13 +3,13 @@ package com.test.novel
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.view.WindowInsets
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.test.novel.databinding.MainBinding
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -24,5 +24,10 @@ class MainActivity : AppCompatActivity() {
         // 使用 ViewBinding
         val binding = MainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+//        val windowMetrics = windowManager.currentWindowMetrics
+//        val screenWidth4 = windowMetrics.bounds.width()
+//        val screenHeight4 = windowMetrics.bounds.height()
+//        println("screenWidth4: $screenWidth4")
+//        println("screenHeight4: $screenHeight4")
     }
 }

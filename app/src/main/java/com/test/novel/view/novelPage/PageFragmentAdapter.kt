@@ -4,7 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class PageFragmentAdapter(activity:AppCompatActivity, private val data:List<String>) : FragmentStateAdapter(activity) {
+class PageFragmentAdapter(fragment: Fragment, private val data:List<String>) : FragmentStateAdapter(fragment) {
+
     override fun getItemCount(): Int {
         return data.size
     }

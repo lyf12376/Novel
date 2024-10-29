@@ -32,6 +32,9 @@ class NovelFragmentViewModel @Inject constructor():ViewModel(){
     private val _showBar = MutableStateFlow(true)
     val showBar = _showBar.asStateFlow()
 
+    private val _everyPage = MutableStateFlow<List<String>>(emptyList())
+    val everyPage = _everyPage.asStateFlow()
+
     private var hideBarJob: Job? = null
 
     fun init(bookId: Int) {
