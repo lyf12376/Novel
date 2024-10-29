@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@+id/HomeFragment">
+
+    <fragment
+        android:id="@+id/NovelFragment"
+        android:name="com.test.novel.view.novelPage.NovelFragment"
+        android:label="NovelFragment"
+        tools:layout="@layout/novel_read">
+<!--        <action-->
+<!--            android:id="@+id/action_firstFragment_to_secondFragment"-->
+<!--            app:destination="@id/secondFragment" />-->
+        <argument
+            android:name="novelId"
+            app:argType="integer"
+            android:defaultValue="12436" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="com.test.novel.view.homePage.HomeFragment"
+        android:label="NovelFragment"
+        tools:layout="@layout/fragment_home">
+        <!--        <action-->
+        <!--            android:id="@+id/action_firstFragment_to_secondFragment"-->
+        <!--            app:destination="@id/secondFragment" />-->
+        <action
+            android:id="@+id/action_HomeFragment_to_NovelFragment"
+            app:destination="@id/bookShelfFragment"
+            app:launchSingleTop="false"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookShelfFragment"
+        android:name="com.test.novel.view.bookShelfPage.BookShelfFragment"
+        android:label="BookShelfFragment"
+        tools:layout="@layout/fragment_book_shelf">
+    </fragment>
+
+
+
+
+
+</navigation>
