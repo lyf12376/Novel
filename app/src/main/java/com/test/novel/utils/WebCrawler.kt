@@ -3,6 +3,7 @@ package com.test.novel.utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
@@ -30,7 +31,7 @@ object WebCrawler {
             .url(url)
             .build()
 
-        client.newCall(request).execute().use { response ->
+        client.newCall(request).execute().use {  response->
             return if (response.isSuccessful) {
                 val contentType = response.header("Content-Type")
                 val charset = if (contentType != null && contentType.contains("charset=")) {
@@ -46,25 +47,24 @@ object WebCrawler {
         }
     }
 
-    private fun parseHtml(html: String) {
+    private fun parseHtml(html: String):String {
         val doc: Document = Jsoup.parse(html)
 
         // 提取 id 为 "chaptercontent" 的 div
         val contentDiv = doc.selectFirst("#chaptercontent")
+        val chapterName = doc.selectFirst("h1.wap_none")
 
         // 如果找到了这个 div，提取里面的纯文本
         if (contentDiv != null) {
             val textContent = contentDiv.html().replace(" ", "")
             val noSpacesString = textContent.replace("\\s+".toRegex(), "").split("<br><br>")
-            noSpacesString.forEach {
-                println(it)
-            }
+            
         } else {
             println("没有找到正文内容")
         }
     }
 
-    suspend fun fetchChapter(chapter:Int) {
+    suspend fun fetchChapter(chapter:Int):String {
         val url = "https://www.3bqg.cc/book/10376/${chapter}.html"
         val html = fetchHtml(url)
         if (html != null) {
@@ -75,9 +75,10 @@ object WebCrawler {
     }
 }
 
-//fun main() {
-//    // 替换为你需要爬取的实际 URL
-//    startCrawler("https://www.3bqg.cc/book/10376/1.html")
-//}
+fun main() {
+    // 替换为你需要爬取的实际 URL
+    runBlocking { WebCrawler.fetchChapter(2) }
+
+}
 
 

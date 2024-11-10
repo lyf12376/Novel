@@ -32,9 +32,11 @@ object SizeUtils {
         val firstH = getLineHeight(0, view)
         val otherH = getLineHeight(1, view)
         println("firstH: $firstH otherH: $otherH h: $h")
+        val lineHeight = view.paint.fontMetricsInt.bottom - view.paint.fontMetricsInt.top
+        println(lineHeight)
         var lines = 1
-        if (otherH != 0) lines = (h - firstH) / otherH + 1 //仅一行时返回1
-        return lines + 1
+        if (otherH != 0) lines = (h - firstH + (otherH - lineHeight)) / otherH + 1 //仅一行时返回1
+        return lines
     }
 
     //获取某一行的行高

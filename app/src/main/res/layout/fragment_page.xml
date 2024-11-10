@@ -46,7 +46,7 @@
         android:includeFontPadding="false"
         android:lineSpacingExtra="16dp"
         android:lineSpacingMultiplier="1.0"
-        android:letterSpacing="0.1"
+        android:letterSpacing="0.2"
         android:padding="16.dp"
         android:text=""
         android:textColor="#333333"

@@ -8,9 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.test.novel.R
 import com.test.novel.databinding.FragmentPageBinding
 import com.test.novel.utils.SizeUtils
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,28 +53,23 @@ class PageFragment : Fragment() {
         val novelText = binding.novelText
         sharedViewModel =
             ViewModelProvider(requireParentFragment())[NovelFragmentViewModel::class.java]
+
         novelText.post {
             val width = novelText.width - novelText.paddingLeft - novelText.paddingRight
             val height = novelText.height - novelText.paddingTop - novelText.paddingBottom
-            val example = """${"\u3000\u3000"}神州历9999年秋，东海，青州城。
-${"\u3000\u3000"}青州学宫，青州城圣地，青州城豪门贵族以及宗门世家内半数以上的强者，都从青州学宫走出。
-${"\u3000\u3000"}因而，青州城之人皆以能够入学宫中修行为荣，旦有机会踏入学宫，必刻苦求学。
-${"\u3000\u3000"}然而，似乎并非所有人都有此觉悟。
-${"\u3000\u3000"}此时在青州学宫的一间学舍中，便有一位少年正趴在桌上熟睡。
-${"\u3000\u3000"}讲堂之上，一身穿青衣长裙的少女也注意到了这一幕，俏脸上不由浮现一抹怒意，迈开脚步朝着正在睡梦中的少年走去。
-${"\u3000\u3000"}秦伊，十七岁，青州学院正式弟子，外门弟子讲师，容颜美貌，身材火爆。
-${"\u3000\u3000"}学舍中，一双双眼睛随着秦伊的动人身姿一起移动着，哪怕是生气，秦伊迈出的步伐依旧优雅。"""
-
+            val example = text
             // 获取 Paint 对象以测量字符宽度
             novelText.text = example
-            val list = example.split("\n")
+            val list = example?.split("\n")
             var pageText = ""
             val pageLines = SizeUtils.getPageLineCount(novelText)
-            println(pageLines)
             var nowLines = 0
             val textPaint = novelText.paint
-            var lastCharIndex = Pair(0, 0)
-            list.forEachIndexed { index, s ->
+            var pageSent = false
+
+            list?.forEachIndexed { index, s ->
+                if (pageSent) return@forEachIndexed
+
                 val length = s.length
                 var left = 0
                 for (i in 0 until length) {
@@ -79,17 +77,20 @@ ${"\u3000\u3000"}学舍中，一双双眼睛随着秦伊的动人身姿一起移
                     if (i == length - 1 && textWidth > 0) {
                         nowLines++
                         pageText += s.substring(left, i + 1) + "\n"
-                        println(s.substring(left, i + 1))
                     }
                     if (textWidth >= width) {
-                        println("$index $i $left")
-                        println(s.substring(left, i))
                         pageText += s.substring(left, i) + "\n"
                         left = i
                         nowLines++
                     }
                     if (nowLines == pageLines) {
-                        return@forEachIndexed
+                        pageSent = true
+                        if(pageLines == 1){
+                            break
+                        }
+                        Log.d("TAG", "onViewCreated: sendIntent")
+                        sharedViewModel.sendIntent(BookIntent.AddPage(rowIndex = index, columnIndex = i))
+                        break
                     }
                 }
             }
