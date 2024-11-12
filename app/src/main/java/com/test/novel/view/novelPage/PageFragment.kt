@@ -1,41 +1,36 @@
 package com.test.novel.view.novelPage
 
+import android.graphics.Rect
 import android.os.Bundle
-import android.text.TextPaint
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.test.novel.R
 import com.test.novel.databinding.FragmentPageBinding
 import com.test.novel.utils.SizeUtils
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "text"
-//private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [PageFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+private const val ARG_PARAM1 = "title"
+private const val ARG_PARAM2 = "text"
+private const val ARG_PARAM3 = "load"
+
 class PageFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var text: String? = ""
+    private var load: Boolean = false
+    private var title:String? = ""
     private lateinit var sharedViewModel: NovelFragmentViewModel
-//    private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            text = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
+            title = it.getString(ARG_PARAM1)
+            text = it.getString(ARG_PARAM2)
+            load = it.getBoolean(ARG_PARAM3)
         }
     }
 
@@ -43,7 +38,6 @@ class PageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_page, container, false)
     }
 
@@ -53,68 +47,47 @@ class PageFragment : Fragment() {
         val novelText = binding.novelText
         sharedViewModel =
             ViewModelProvider(requireParentFragment())[NovelFragmentViewModel::class.java]
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(binding.root)
+
+        if (title == ""){
+            binding.title.visibility = View.GONE
+            constraintSet.connect(binding.novelText.id,ConstraintSet.TOP,binding.topic.id,ConstraintSet.BOTTOM)
+        }else{
+            binding.title.post {
+                binding.title.text = title
+            }
+        }
 
         novelText.post {
-            val width = novelText.width - novelText.paddingLeft - novelText.paddingRight
-            val height = novelText.height - novelText.paddingTop - novelText.paddingBottom
             val example = text
             // 获取 Paint 对象以测量字符宽度
             novelText.text = example
-            val list = example?.split("\n")
-            var pageText = ""
+            if (load)
+                return@post
             val pageLines = SizeUtils.getPageLineCount(novelText)
-            var nowLines = 0
-            val textPaint = novelText.paint
-            var pageSent = false
-
-            list?.forEachIndexed { index, s ->
-                if (pageSent) return@forEachIndexed
-
-                val length = s.length
-                var left = 0
-                for (i in 0 until length) {
-                    val textWidth = textPaint.measureText(s, left, i + 1)
-                    if (i == length - 1 && textWidth > 0) {
-                        nowLines++
-                        pageText += s.substring(left, i + 1) + "\n"
-                    }
-                    if (textWidth >= width) {
-                        pageText += s.substring(left, i) + "\n"
-                        left = i
-                        nowLines++
-                    }
-                    if (nowLines == pageLines) {
-                        pageSent = true
-                        if(pageLines == 1){
-                            break
-                        }
-                        Log.d("TAG", "onViewCreated: sendIntent")
-                        sharedViewModel.sendIntent(BookIntent.AddPage(rowIndex = index, columnIndex = i))
-                        break
-                    }
-                }
+            val layout= novelText.layout
+            val maxLines = layout.lineCount
+            if (maxLines <= pageLines) {
+                novelText.text = example
+                return@post
             }
-            novelText.text = pageText
+            val lineEndOffset = layout.getLineEnd(pageLines-1)
+            val textShowInPage = example?.substring(0,lineEndOffset)
+            novelText.text = textShowInPage
+            sharedViewModel.sendIntent(BookIntent.AddPage(lineEndOffset))
         }
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PageFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(text: String) =
+        fun newInstance(pageState: PageState) =
             PageFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, text)
-                    Log.d("TAG", "newInstance: $text")
-//                    putString(ARG_PARAM2, param2)
+                    putString(ARG_PARAM1, pageState.title)
+                    putString(ARG_PARAM2, pageState.text)
+                    putBoolean(ARG_PARAM3,pageState.load)
+                    Log.d("TAG", "newInstance: $pageState")
                 }
             }
     }

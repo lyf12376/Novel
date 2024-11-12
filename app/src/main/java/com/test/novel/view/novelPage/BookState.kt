@@ -9,19 +9,26 @@ data class BookState(
     val bookId: Int = 0,
     val author: String = "",
     val brief:String = "",
-    val content: List<String> = emptyList(),
     val currentIndex: Int = 0,
-    val showBar: Boolean = true,
-    val everyPage: MutableList<MutableList<String>> = mutableListOf()
+    val showBar: Boolean = false,
+    val pages: MutableList<PageState> = mutableListOf()
 )
 
-sealed class BookIntent() {
+@Serializable
+data class PageState(
+    val title:String = "",
+    val text:String = "",
+    val load:Boolean = false
+)
+
+sealed class BookIntent {
     data object ShowBar: BookIntent()
 
     data class Init(val bookBrief: BookBrief) : BookIntent()
 
-    data class SetContent(val text:MutableList<MutableList<String>>):BookIntent()
+    data class SetContent(val pages:MutableList<PageState>):BookIntent()
 
-    data class AddPage(val rowIndex:Int,val columnIndex:Int):BookIntent()
+    data class AddPage(val index:Int):BookIntent()
+
 }
 

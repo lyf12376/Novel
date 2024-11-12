@@ -15,18 +15,11 @@ class NovelFrameLayout @JvmOverloads constructor(
     private var isSingleTap = 0
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        // 如果是单击事件，消费掉，不往下传递
-//        if (isSingleTap == 1) {
-//            Log.d("TAG", "dispatchTouchEvent: ")
-//            return true
-//        }
-//        Log.d("TAG", "dispatchTouchEvent: $ev")
         return super.dispatchTouchEvent(ev)
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         ev?.let {
-//            Log.d("TAG", "onInterceptTouchEvent: $ev")
             when (it.action) {
                 MotionEvent.ACTION_DOWN -> {
 
@@ -46,20 +39,16 @@ class NovelFrameLayout @JvmOverloads constructor(
                             x < screenWidth / 3 -> {
                                 // 点击在左侧
                                 clickList[0]()
-//                                Log.d("TAG", "onTouchEvent: l")
                             }
                             x < 2 * screenWidth / 3 -> {
                                 // 点击在中间
                                 clickList[1]()
-//                                Log.d("TAG", "onTouchEvent: m")
                             }
                             else -> {
                                 // 点击在右侧
                                 clickList[2]()
-//                                Log.d("TAG", "onTouchEvent: r")
                             }
                         }
-//                        Log.d("TAG", "onInterceptTouchEvent: intercept")
                         isSingleTap = 0
                         return true
                     }
@@ -72,7 +61,6 @@ class NovelFrameLayout @JvmOverloads constructor(
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         Log.d("TAG", "onTouchEvent: handle")
         event?.let {
-
         }
         isSingleTap = 0
         return true

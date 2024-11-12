@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#e3dbd3"
-    tools:context=".view.novelPage.PageFragment">
+    android:background="#e3dbd3">
 
 
     <LinearLayout
@@ -39,20 +38,6 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16.dp"
-        android:fontFamily="sans-serif"
-        android:textColor="#333333"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.1"
-        android:text="第一章 我有三个相宫"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topic"/>
-
-    <TextView
         android:id="@+id/novelText"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -62,7 +47,7 @@
         android:lineSpacingMultiplier="1.0"
         android:letterSpacing="0.1"
         android:padding="16dp"
-        android:text=""
+        android:text="大撒大撒"
         android:textColor="#333333"
         android:textSize="28sp"
         android:textStyle=""
@@ -70,7 +55,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/topic"
         app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

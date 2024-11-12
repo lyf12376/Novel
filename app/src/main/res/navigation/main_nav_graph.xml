@@ -9,7 +9,7 @@
         android:id="@+id/NovelFragment"
         android:name="com.test.novel.view.novelPage.NovelFragment"
         android:label="NovelFragment"
-        tools:layout="@layout/novel_read">
+        tools:layout="@layout/fragment_novel">
 <!--        <action-->
 <!--            android:id="@+id/action_firstFragment_to_secondFragment"-->
 <!--            app:destination="@id/secondFragment" />-->

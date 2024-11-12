@@ -7,19 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.test.novel.R
-import com.test.novel.databinding.FragmentPageBinding
-import com.test.novel.databinding.NovelReadBinding
+import com.test.novel.databinding.FragmentNovelBinding
 import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
@@ -50,7 +47,7 @@ class NovelFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.novel_read, container, false)
+        return inflater.inflate(R.layout.fragment_novel, container, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -58,7 +55,7 @@ class NovelFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         var statusBarHeight = 0
         var navigationBarHeight = 0
-        val binding = NovelReadBinding.bind(view)
+        val binding = FragmentNovelBinding.bind(view)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -104,8 +101,7 @@ class NovelFragment : Fragment() {
 　　“叶伏天。”秦伊冷漠的将他打断，道：“青州学宫是在什么背景下创立？”
 　　很显然，秦伊是要回避刚才的尴尬，转移话题，但她此刻的怒火，叶伏天却能够清楚的感受到，他甚至隐隐感觉到从秦伊身上流动出一缕缕剑意，锋利刺骨，刺痛着他的每一寸肌肤。
 　　“三百年前，东凰大帝一统东方神州，下令天下诸侯创建武府学宫，兴盛武道，青州学宫便是在此背景下创立。”叶伏天回应道，当然他所说的是正史记载，在家族中他所看到的野史中还有另一个名字存在，然而，那禁忌之名，却决不允许被提及。"""
-        val list = text.split("\n").toMutableList()
-        novelFragmentViewModel.sendIntent(BookIntent.SetContent(mutableListOf(list)))
+        novelFragmentViewModel.sendIntent(BookIntent.SetContent(mutableListOf(PageState(title = "第一章 我有三个相宫", text = text, load = false))))
         val adapter = PageFragmentAdapter(
             this,
             novelFragmentViewModel

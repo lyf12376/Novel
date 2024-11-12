@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -53,15 +51,18 @@ class NovelFragmentViewModel @Inject constructor() : ViewModel() {
                 }
 
                 is BookIntent.SetContent -> {
-                    _state.value = _state.value.copy(everyPage = intent.text)
+                    _state.value = _state.value.copy(pages = intent.pages)
                 }
 
                 is BookIntent.AddPage -> {
                     println("add")
-                    val list = _state.value.everyPage.last().generateListFrom(intent.rowIndex,intent.columnIndex)
-                    val newList = _state.value.everyPage.toMutableList()
-                    newList.add(list)
-                    _state.value = _state.value.copy(everyPage = newList)
+                    Log.d("TAG", "processIntent: ${_state.value.pages}")
+                    val nowPage = _state.value.pages.last().text.substring(0,intent.index+1)
+                    val nextPage = _state.value.pages.last().text.substring(intent.index)
+                    val newList = _state.value.pages.toMutableList()
+                    newList[newList.size-1] = newList[newList.size-1].copy(text = nowPage,load = true)
+                    newList.add(PageState(text = nextPage,load = false))
+                    _state.value = _state.value.copy(pages = newList)
                 }
             }
         }
