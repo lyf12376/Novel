@@ -16,6 +16,7 @@ data class BookState(
 
 @Serializable
 data class PageState(
+    val chapterIndex:Int = 1,
     val title:String = "",
     val text:String = "",
     val load:Boolean = false
@@ -28,7 +29,9 @@ sealed class BookIntent {
 
     data class SetContent(val pages:MutableList<PageState>):BookIntent()
 
-    data class AddPage(val index:Int):BookIntent()
+    data class AddPage(val insertIndex:Int, val splitTextIndex:Int):BookIntent()
+
+    data class SetCurrentIndex(val index:Int):BookIntent()
 
 }
 

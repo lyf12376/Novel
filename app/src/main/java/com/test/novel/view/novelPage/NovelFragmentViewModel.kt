@@ -55,14 +55,18 @@ class NovelFragmentViewModel @Inject constructor() : ViewModel() {
                 }
 
                 is BookIntent.AddPage -> {
-                    println("add")
-                    Log.d("TAG", "processIntent: ${_state.value.pages}")
-                    val nowPage = _state.value.pages.last().text.substring(0,intent.index+1)
-                    val nextPage = _state.value.pages.last().text.substring(intent.index)
+                    println(intent)
+                    val nowPage = _state.value.pages[intent.insertIndex].text.substring(0,intent.splitTextIndex)
+                    val nextPage = _state.value.pages[intent.insertIndex].text.substring(intent.splitTextIndex)
                     val newList = _state.value.pages.toMutableList()
-                    newList[newList.size-1] = newList[newList.size-1].copy(text = nowPage,load = true)
-                    newList.add(PageState(text = nextPage,load = false))
-                    _state.value = _state.value.copy(pages = newList)
+                    newList[intent.insertIndex] = newList[intent.insertIndex].copy(text = nowPage,load = true)
+                    newList.add(intent.insertIndex + 1,PageState(text = nextPage,load = false))
+                    _state.value = _state.value.copy(currentIndex = intent.insertIndex, pages = newList)
+                    Log.d("TAG", "processIntent: ${_state.value}")
+                }
+
+                is BookIntent.SetCurrentIndex -> {
+                    _state.value = _state.value.copy(currentIndex = intent.index)
                 }
             }
         }

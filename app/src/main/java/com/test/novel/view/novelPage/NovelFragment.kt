@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.viewpager2.widget.ViewPager2
 import com.test.novel.R
 import com.test.novel.databinding.FragmentNovelBinding
 import kotlinx.coroutines.launch
@@ -101,19 +102,44 @@ class NovelFragment : Fragment() {
 　　“叶伏天。”秦伊冷漠的将他打断，道：“青州学宫是在什么背景下创立？”
 　　很显然，秦伊是要回避刚才的尴尬，转移话题，但她此刻的怒火，叶伏天却能够清楚的感受到，他甚至隐隐感觉到从秦伊身上流动出一缕缕剑意，锋利刺骨，刺痛着他的每一寸肌肤。
 　　“三百年前，东凰大帝一统东方神州，下令天下诸侯创建武府学宫，兴盛武道，青州学宫便是在此背景下创立。”叶伏天回应道，当然他所说的是正史记载，在家族中他所看到的野史中还有另一个名字存在，然而，那禁忌之名，却决不允许被提及。"""
-        novelFragmentViewModel.sendIntent(BookIntent.SetContent(mutableListOf(PageState(title = "第一章 我有三个相宫", text = text, load = false))))
+        novelFragmentViewModel.sendIntent(
+            BookIntent.SetContent(
+                mutableListOf(
+                    PageState(
+                        title = "第一章 我有三个相宫",
+                        text = text,
+                        load = false
+                    ),PageState(
+                        title = "第二章 我有三个相宫",
+                        text = text,
+                        load = false
+                    )
+                )
+            )
+        )
         val adapter = PageFragmentAdapter(
             this,
             novelFragmentViewModel
         )
         binding.novelText.adapter = adapter
+        binding.novelText.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                println("onPageSelected: $position")
+                novelFragmentViewModel.sendIntent(BookIntent.SetCurrentIndex(binding.novelText.currentItem))
+            }
+        })
         novelFrameLayout.apply {
             // 定义点击事件的处理函数
-            val leftClick = { binding.novelText.currentItem -= 1 }
+            val leftClick = {
+                binding.novelText.currentItem -= 1
+            }
             val middleClick = {
                 novelFragmentViewModel.sendIntent(BookIntent.ShowBar)
             }
-            val rightClick = { binding.novelText.currentItem += 1 }
+            val rightClick = {
+                binding.novelText.currentItem += 1
+            }
             // 设置点击事件列表
             this.clickList = listOf(leftClick, middleClick, rightClick)
         }

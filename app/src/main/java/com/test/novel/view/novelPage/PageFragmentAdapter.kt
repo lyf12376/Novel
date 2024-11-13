@@ -12,12 +12,10 @@ class PageFragmentAdapter(fragment: Fragment, viewModel: NovelFragmentViewModel)
     FragmentStateAdapter(fragment) {
 
     private var pages: MutableList<PageState> = mutableListOf()
-    private var load:MutableList<Boolean> = mutableListOf()
 
     init {
         viewModel.state.onEach { state ->
-            Log.d("TAG", ": ${state.pages}")
-            updateData(state.pages)
+            updateData(state.pages,state.currentIndex+1)
         }.launchIn(fragment.viewLifecycleOwner.lifecycleScope) // 使用 viewLifecycleOwner 的作用域
     }
 
@@ -26,13 +24,15 @@ class PageFragmentAdapter(fragment: Fragment, viewModel: NovelFragmentViewModel)
     }
 
     override fun createFragment(position: Int): Fragment {
-        return PageFragment.newInstance(pages[position])
+        return PageFragment.newInstance(pages[position],position)
     }
 
-    private fun updateData(newPage:MutableList<PageState>){
+    private fun updateData(newPage:MutableList<PageState>,insertIndex:Int){
         if (pages == newPage) return
         pages = newPage
-        notifyItemInserted(pages.size - 1)
+        println(insertIndex)
+        notifyItemInserted(insertIndex)
+        notifyItemRangeChanged(insertIndex,pages.size-insertIndex)
     }
 }
 
