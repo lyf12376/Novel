@@ -14,13 +14,16 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.test.novel.R
 import com.test.novel.databinding.FragmentPageBinding
 import com.test.novel.utils.SizeUtils
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
-private const val ARG_PARAM1 = "title"
-private const val ARG_PARAM2 = "text"
-private const val ARG_PARAM3 = "load"
-private const val ARG_PARAM4 = "pageIndex"
+private const val TITLE = "title"
+private const val TEXT = "text"
+private const val LOAD = "load"
+private const val INDEX = "pageIndex"
+private const val CHAPTER = "chapterIndex"
+
 
 class PageFragment : Fragment() {
     // TODO: Rename and change types of parameters
@@ -28,6 +31,7 @@ class PageFragment : Fragment() {
     private var load: Boolean = false
     private var title:String? = ""
     private var pageIndex:Int = 0
+    private var chapterIndex:Int = 0
     private lateinit var sharedViewModel: NovelFragmentViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,10 +39,10 @@ class PageFragment : Fragment() {
         sharedViewModel =
             ViewModelProvider(requireParentFragment())[NovelFragmentViewModel::class.java]
         arguments?.let {
-            title = it.getString(ARG_PARAM1)
-            text = it.getString(ARG_PARAM2)
-            load = it.getBoolean(ARG_PARAM3)
-            pageIndex = it.getInt(ARG_PARAM4)
+            title = it.getString(TITLE)
+            text = it.getString(TEXT)
+            load = it.getBoolean(LOAD)
+            pageIndex = it.getInt(INDEX)
         }
     }
 
@@ -52,19 +56,20 @@ class PageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        Log.d("TAG", "onViewCreated: $pageIndex ${text?.substring(0,10)}")
+        Log.d("TAG", "onViewCreated:")
         val binding = FragmentPageBinding.bind(view)
         val novelText = binding.novelText
         val constraintSet = ConstraintSet()
         constraintSet.clone(binding.root)
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
-                sharedViewModel.state.collect{
+                sharedViewModel.state.collectLatest{
                     val page = it.pages[pageIndex]
+                    load = page.load
+                    title = page.title
+                    chapterIndex = page.chapterIndex
                     if (page.text != text){
                         text = page.text
-                        load = page.load
-                        title = page.title
                         binding.title.text = title
                         novelText.text = text
                     }
@@ -82,7 +87,7 @@ class PageFragment : Fragment() {
                         novelText.text = example
                         if (load)
                             return@post
-                        val pageLines = SizeUtils.getPageLineCount(novelText)
+                        var pageLines = SizeUtils.getPageLineCount(novelText)
                         println(pageLines)
                         val layout= novelText.layout
                         val maxLines = layout.lineCount
@@ -90,10 +95,40 @@ class PageFragment : Fragment() {
                             novelText.text = example
                             return@post
                         }
-                        val lineEndOffset = layout.getLineEnd(pageLines-1)
+                        println(layout.lineCount)
+                        var lineEndOffset = layout.getLineEnd(pageLines-1)
                         val textShowInPage = example?.substring(0,lineEndOffset)
+                        var nextStartLine = pageLines - 1
+                        pageLines ++
+                        var nextEndLine = nextStartLine + pageLines
                         novelText.text = textShowInPage
-                        sharedViewModel.sendIntent(BookIntent.AddPage(pageIndex,lineEndOffset))
+                        val pageList = mutableListOf(PageState(chapterIndex = chapterIndex,title = title?:"",text = textShowInPage?:"",load = true))
+                        while (lineEndOffset < example?.length!!){
+                            if (nextEndLine > layout.lineCount-1){
+                                val nextLineEndOffset = layout.getLineEnd(layout.lineCount-1)
+                                val nextTextShowInPage = example.substring(lineEndOffset,nextLineEndOffset)
+                                println("lastPage  $nextTextShowInPage")
+                                pageList.add(PageState(chapterIndex = chapterIndex,title = "",text = nextTextShowInPage,load = true))
+                                break
+                            }
+                            else {
+                                val nextLineEndOffset = layout.getLineEnd(nextEndLine)
+
+                                val nextTextShowInPage =
+                                    example.substring(lineEndOffset, nextLineEndOffset)
+                                pageList.add(
+                                    PageState(
+                                        chapterIndex = chapterIndex,
+                                        title = "",
+                                        text = nextTextShowInPage,
+                                        load = true
+                                    )
+                                )
+                                lineEndOffset = nextLineEndOffset
+                                nextEndLine += pageLines
+                            }
+                        }
+                        sharedViewModel.sendIntent(BookIntent.AddPages(pageList))
                     }
                 }
             }
@@ -102,7 +137,6 @@ class PageFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        Log.d("TAG", "onPause: $pageIndex")
     }
 
     companion object {
@@ -110,11 +144,11 @@ class PageFragment : Fragment() {
         fun newInstance(pageState: PageState,pageIndex:Int) =
             PageFragment().apply {
                 arguments = Bundle().apply {
-                    Log.d("TAG", "newInstance: $pageIndex")
-                    putString(ARG_PARAM1, pageState.title)
-                    putString(ARG_PARAM2, pageState.text)
-                    putBoolean(ARG_PARAM3,pageState.load)
-                    putInt(ARG_PARAM4,pageIndex)
+                    putString(TITLE, pageState.title)
+                    putString(TEXT, pageState.text)
+                    putBoolean(LOAD,pageState.load)
+                    putInt(INDEX,pageIndex)
+                    putInt(CHAPTER,pageState.chapterIndex)
                 }
             }
     }

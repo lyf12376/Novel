@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.onEach
 class PageFragmentAdapter(fragment: Fragment, viewModel: NovelFragmentViewModel) :
     FragmentStateAdapter(fragment) {
 
+
     private var pages: MutableList<PageState> = mutableListOf()
 
     init {
@@ -30,10 +31,8 @@ class PageFragmentAdapter(fragment: Fragment, viewModel: NovelFragmentViewModel)
     private fun updateData(newPage:MutableList<PageState>,insertIndex:Int){
         if (pages == newPage) return
         pages = newPage
-        println("updateData: $insertIndex")
         notifyItemInserted(insertIndex)
-        notifyItemRangeChanged(insertIndex,pages.size-insertIndex+1)
-        println("updateData: $insertIndex")
+        notifyItemRangeChanged(insertIndex - 1,pages.size-insertIndex+1)
     }
 }
 

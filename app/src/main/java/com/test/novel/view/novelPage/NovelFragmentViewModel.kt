@@ -51,18 +51,34 @@ class NovelFragmentViewModel @Inject constructor() : ViewModel() {
                 }
 
                 is BookIntent.SetContent -> {
+                    val pagesCount = _state.value.pageCount
+                    intent.pages.forEach{
+                        pageState ->
+                        pagesCount.replaceOrAddUntilToIndex(pageState.chapterIndex,1)
+                    }
                     _state.value = _state.value.copy(pages = intent.pages)
                 }
 
-                is BookIntent.AddPage -> {
-                    println(intent)
-                    val nowPage = _state.value.pages[intent.insertIndex].text.substring(0,intent.splitTextIndex)
-                    val nextPage = _state.value.pages[intent.insertIndex].text.substring(intent.splitTextIndex)
+                is BookIntent.AddPages -> {
+                    val pagesCount = _state.value.pageCount
                     val newList = _state.value.pages.toMutableList()
-                    newList[intent.insertIndex] = newList[intent.insertIndex].copy(text = nowPage,load = true)
-                    newList.add(intent.insertIndex + 1,PageState(text = nextPage,load = false))
-                    _state.value = _state.value.copy(currentIndex = intent.insertIndex, pages = newList)
-                    Log.d("TAG", "processIntent: ${_state.value}")
+                    var o = 0
+                    _state.value.pageCount.run {
+                        forEachIndexed { index, i ->
+                            println("$index $i")
+                            if (index < intent.pageState[0].chapterIndex) {
+                                o += i
+                            } else {
+                                return@run
+                            }
+                        }
+                    }
+                    pagesCount.replaceOrAddUntilToIndex(intent.pageState[0].chapterIndex,intent.pageState.size)
+                    newList[o] = intent.pageState[0]
+                    newList.addAll(o+1, intent.pageState.subList(1, intent.pageState.size))
+                    Log.e("TAG", "processIntent: $newList", )
+                    _state.value = _state.value.copy(pages = newList, pageCount = pagesCount)
+                    Log.d("TAG", "processIntent: ${_state.value.pages.size}")
                 }
 
                 is BookIntent.SetCurrentIndex -> {
@@ -102,6 +118,17 @@ class NovelFragmentViewModel @Inject constructor() : ViewModel() {
         }
 
 
+}
+
+fun MutableList<Int>.replaceOrAddUntilToIndex(index: Int, element: Int) {
+    if (index < size) {
+        this[index] = element
+    } else {
+        while (index > size) {
+            add(0)
+        }
+        add(element)
+    }
 }
 
 

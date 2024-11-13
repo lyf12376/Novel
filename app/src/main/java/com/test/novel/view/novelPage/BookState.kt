@@ -11,6 +11,7 @@ data class BookState(
     val brief:String = "",
     val currentIndex: Int = 0,
     val showBar: Boolean = false,
+    val pageCount: MutableList<Int> = mutableListOf(),
     val pages: MutableList<PageState> = mutableListOf()
 )
 
@@ -29,7 +30,7 @@ sealed class BookIntent {
 
     data class SetContent(val pages:MutableList<PageState>):BookIntent()
 
-    data class AddPage(val insertIndex:Int, val splitTextIndex:Int):BookIntent()
+    data class AddPages(val pageState:List<PageState>):BookIntent()
 
     data class SetCurrentIndex(val index:Int):BookIntent()
 

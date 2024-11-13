@@ -107,10 +107,12 @@ class NovelFragment : Fragment() {
                 mutableListOf(
                     PageState(
                         title = "第一章 我有三个相宫",
+                        chapterIndex = 1,
                         text = text,
                         load = false
                     ),PageState(
                         title = "第二章 我有三个相宫",
+                        chapterIndex = 2,
                         text = text,
                         load = false
                     )
@@ -121,11 +123,11 @@ class NovelFragment : Fragment() {
             this,
             novelFragmentViewModel
         )
+        binding.novelText.offscreenPageLimit = 3
         binding.novelText.adapter = adapter
         binding.novelText.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                println("onPageSelected: $position")
                 novelFragmentViewModel.sendIntent(BookIntent.SetCurrentIndex(binding.novelText.currentItem))
             }
         })
