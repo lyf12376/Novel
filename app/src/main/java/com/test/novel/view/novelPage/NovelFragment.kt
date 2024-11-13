@@ -129,16 +129,17 @@ class NovelFragment : Fragment() {
                 novelFragmentViewModel.sendIntent(BookIntent.SetCurrentIndex(binding.novelText.currentItem))
             }
         })
+
         novelFrameLayout.apply {
             // 定义点击事件的处理函数
             val leftClick = {
-                binding.novelText.currentItem -= 1
+                binding.novelText.setCurrentItem(binding.novelText.currentItem - 1, true)
             }
             val middleClick = {
                 novelFragmentViewModel.sendIntent(BookIntent.ShowBar)
             }
             val rightClick = {
-                binding.novelText.currentItem += 1
+                binding.novelText.setCurrentItem(binding.novelText.currentItem + 1, true)
             }
             // 设置点击事件列表
             this.clickList = listOf(leftClick, middleClick, rightClick)

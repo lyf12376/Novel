@@ -30,9 +30,10 @@ class PageFragmentAdapter(fragment: Fragment, viewModel: NovelFragmentViewModel)
     private fun updateData(newPage:MutableList<PageState>,insertIndex:Int){
         if (pages == newPage) return
         pages = newPage
-        println(insertIndex)
+        println("updateData: $insertIndex")
         notifyItemInserted(insertIndex)
-        notifyItemRangeChanged(insertIndex,pages.size-insertIndex)
+        notifyItemRangeChanged(insertIndex,pages.size-insertIndex+1)
+        println("updateData: $insertIndex")
     }
 }
 

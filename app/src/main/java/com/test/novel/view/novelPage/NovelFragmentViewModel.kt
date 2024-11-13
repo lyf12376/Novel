@@ -105,18 +105,3 @@ class NovelFragmentViewModel @Inject constructor() : ViewModel() {
 }
 
 
-fun MutableList<String>.generateListFrom(lineIndex: Int, charIndex: Int): MutableList<String> {
-    if (lineIndex !in indices || charIndex < 0) return mutableListOf()
-    val newList = mutableListOf<String>()
-    for (i in lineIndex until size) {
-        val line = this[i]
-        if (i == lineIndex) {
-            if (charIndex < line.length) {
-                newList.add(line.substring(charIndex))
-            }
-        } else {
-            newList.add(line)
-        }
-    }
-    return newList
-}
