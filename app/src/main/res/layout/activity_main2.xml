@@ -48,28 +48,7 @@
         android:lineSpacingMultiplier="1.0"
         android:letterSpacing="0.1"
         android:padding="16dp"
-        android:text="大撒大撒"
-        android:textColor="#333333"
-        android:textSize="28sp"
-        android:textStyle=""
-        app:layout_constraintBottom_toTopOf="@+id/origin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topic"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/origin"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:fontFamily="sans-serif"
-        android:includeFontPadding="false"
-        android:lineSpacingExtra="24dp"
-        android:lineSpacingMultiplier="1.0"
-        android:letterSpacing="0.1"
-        android:padding="16dp"
-        android:text="大撒大撒"
+        android:text=""
         android:textColor="#333333"
         android:textSize="28sp"
         android:textStyle=""
@@ -77,8 +56,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/custom"
+        app:layout_constraintTop_toBottomOf="@+id/topic"
         app:layout_constraintVertical_bias="0.0" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/origin"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:fontFamily="sans-serif"-->
+<!--        android:includeFontPadding="false"-->
+<!--        android:lineSpacingExtra="24dp"-->
+<!--        android:lineSpacingMultiplier="1.0"-->
+<!--        android:letterSpacing="0.1"-->
+<!--        android:padding="16dp"-->
+<!--        android:text="大撒大撒"-->
+<!--        android:textColor="#333333"-->
+<!--        android:textSize="28sp"-->
+<!--        android:textStyle=""-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="1.0"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/custom"-->
+<!--        app:layout_constraintVertical_bias="0.0" />-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

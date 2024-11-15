@@ -73,7 +73,7 @@ class PageFragment : Fragment() {
                         binding.title.text = title
                         novelText.text = text
                     }
-                    if (title == ""){
+                    if (!page.showTitle){
                         binding.title.visibility = View.GONE
                         constraintSet.connect(binding.novelText.id,ConstraintSet.TOP,binding.topic.id,ConstraintSet.BOTTOM)
                     }else{
@@ -88,38 +88,38 @@ class PageFragment : Fragment() {
                         if (load)
                             return@post
                         var pageLines = SizeUtils.getPageLineCount(novelText)
-                        println(pageLines)
-                        val layout= novelText.layout
-                        val maxLines = layout.lineCount
+                        println("pageLines $pageLines")
+                        val maxLines = novelText.getLineCountCus()
                         if (maxLines <= pageLines) {
                             novelText.text = example
                             return@post
                         }
-                        println(layout.lineCount)
-                        var lineEndOffset = layout.getLineEnd(pageLines-1)
+                        println("maxLines $maxLines")
+                        var lineEndOffset = novelText.getLineEnd(pageLines-1)
                         val textShowInPage = example?.substring(0,lineEndOffset)
                         var nextStartLine = pageLines - 1
                         pageLines ++
                         var nextEndLine = nextStartLine + pageLines
                         novelText.text = textShowInPage
-                        val pageList = mutableListOf(PageState(chapterIndex = chapterIndex,title = title?:"",text = textShowInPage?:"",load = true))
+                        val pageList = mutableListOf(PageState(chapterIndex = chapterIndex,showTitle = true,title = title?:"",text = textShowInPage?:"",load = true))
                         while (lineEndOffset < example?.length!!){
-                            if (nextEndLine > layout.lineCount-1){
-                                val nextLineEndOffset = layout.getLineEnd(layout.lineCount-1)
+                            if (nextEndLine > maxLines - 1){
+                                val nextLineEndOffset = novelText.getLineEnd(maxLines - 1)
                                 val nextTextShowInPage = example.substring(lineEndOffset,nextLineEndOffset)
                                 println("lastPage  $nextTextShowInPage")
                                 pageList.add(PageState(chapterIndex = chapterIndex,title = "",text = nextTextShowInPage,load = true))
                                 break
                             }
                             else {
-                                val nextLineEndOffset = layout.getLineEnd(nextEndLine)
+                                val nextLineEndOffset = novelText.getLineEnd(nextEndLine)
 
                                 val nextTextShowInPage =
                                     example.substring(lineEndOffset, nextLineEndOffset)
                                 pageList.add(
                                     PageState(
                                         chapterIndex = chapterIndex,
-                                        title = "",
+                                        showTitle = false,
+                                        title = title?:"",
                                         text = nextTextShowInPage,
                                         load = true
                                     )
@@ -133,10 +133,6 @@ class PageFragment : Fragment() {
                 }
             }
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     companion object {

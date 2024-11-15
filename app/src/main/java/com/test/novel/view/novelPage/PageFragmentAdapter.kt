@@ -32,7 +32,7 @@ class PageFragmentAdapter(fragment: Fragment, viewModel: NovelFragmentViewModel)
         if (pages == newPage) return
         pages = newPage
         notifyItemInserted(insertIndex)
-        notifyItemRangeChanged(insertIndex - 1,pages.size-insertIndex+1)
+        notifyItemRangeChanged(insertIndex,pages.size-insertIndex+1)
     }
 }
 

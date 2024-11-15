@@ -18,6 +18,7 @@ data class BookState(
 @Serializable
 data class PageState(
     val chapterIndex:Int = 1,
+    val showTitle:Boolean = false,
     val title:String = "",
     val text:String = "",
     val load:Boolean = false

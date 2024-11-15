@@ -1,23 +1,32 @@
 package com.test.novel
 
+import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.test.novel.databinding.ActivityMain2Binding
+import com.test.novel.utils.SizeUtils
 
 class MainActivity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main2)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT) // light causes internally enforce the navigation bar to be fully transparent
+        )
+
+        // 初始化 binding
+        val binding = ActivityMain2Binding.inflate(layoutInflater)
+        setContentView(binding.root) // 使用 binding.root 设置内容视图
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val binding= ActivityMain2Binding.inflate(layoutInflater)
         val text = """${"\u3000\u3000"}神州历9999年秋，东海，青州城。
 　　青州学宫，青州城圣地，青州城豪门贵族以及宗门世家内半数以上的强者，都从青州学宫走出。
 　　因而，青州城之人皆以能够入学宫中修行为荣，旦有机会踏入学宫，必刻苦求学。
@@ -43,7 +52,15 @@ class MainActivity2 : AppCompatActivity() {
 　　“叶伏天。”秦伊冷漠的将他打断，道：“青州学宫是在什么背景下创立？”
 　　很显然，秦伊是要回避刚才的尴尬，转移话题，但她此刻的怒火，叶伏天却能够清楚的感受到，他甚至隐隐感觉到从秦伊身上流动出一缕缕剑意，锋利刺骨，刺痛着他的每一寸肌肤。
 　　“三百年前，东凰大帝一统东方神州，下令天下诸侯创建武府学宫，兴盛武道，青州学宫便是在此背景下创立。”叶伏天回应道，当然他所说的是正史记载，在家族中他所看到的野史中还有另一个名字存在，然而，那禁忌之名，却决不允许被提及。"""
-
-
+        binding.custom.text = text
+        binding.custom.post {
+            println( binding.custom.getLineCountCus())
+            val layout = binding.custom.layout
+            println(layout.lineCount)
+            for (i in 0 until layout.lineCount){
+                println("line $i: ${text.substring(layout.getLineStart(i),layout.getLineEnd(i))}")
+                println("line $i: ${binding.custom.getLineText(i)}")
+            }
+        }
     }
 }

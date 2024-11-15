@@ -107,11 +107,13 @@ class NovelFragment : Fragment() {
                 mutableListOf(
                     PageState(
                         title = "第一章 我有三个相宫",
+                        showTitle = true,
                         chapterIndex = 1,
                         text = text,
                         load = false
                     ),PageState(
                         title = "第二章 我有三个相宫",
+                        showTitle = true,
                         chapterIndex = 2,
                         text = text,
                         load = false

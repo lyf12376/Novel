@@ -48,11 +48,11 @@
         android:textSize="32sp"
         android:textStyle="bold"
         android:letterSpacing="0.1"
-        android:text="第一章 我有三个相宫"
+        android:text=""
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topic"/>
 
-    <TextView
+    <com.test.novel.view.customView.NovelTextView
         android:id="@+id/novelText"
         android:layout_width="match_parent"
         android:layout_height="0dp"
