@@ -85,16 +85,17 @@ class PageFragment : Fragment() {
                         val example = text
                         // 获取 Paint 对象以测量字符宽度
                         novelText.text = example
+//                        novelText.logAll()
                         if (load)
                             return@post
                         var pageLines = SizeUtils.getPageLineCount(novelText)
-                        println("pageLines $pageLines")
+//                        println("pageLines $pageLines")
                         val maxLines = novelText.getLineCountCus()
                         if (maxLines <= pageLines) {
                             novelText.text = example
                             return@post
                         }
-                        println("maxLines $maxLines")
+//                        println("maxLines $maxLines")
                         var lineEndOffset = novelText.getLineEnd(pageLines-1)
                         val textShowInPage = example?.substring(0,lineEndOffset)
                         var nextStartLine = pageLines - 1
@@ -106,7 +107,7 @@ class PageFragment : Fragment() {
                             if (nextEndLine > maxLines - 1){
                                 val nextLineEndOffset = novelText.getLineEnd(maxLines - 1)
                                 val nextTextShowInPage = example.substring(lineEndOffset,nextLineEndOffset)
-                                println("lastPage  $nextTextShowInPage")
+//                                println("lastPage  $nextTextShowInPage")
                                 pageList.add(PageState(chapterIndex = chapterIndex,title = "",text = nextTextShowInPage,load = true))
                                 break
                             }

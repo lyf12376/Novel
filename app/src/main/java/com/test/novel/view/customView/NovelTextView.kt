@@ -25,7 +25,9 @@ class NovelTextView @JvmOverloads constructor(context: Context, attrs: Attribute
 
 
     override fun onDraw(canvas: Canvas) {
-
+//        println(y)
+//        if (text != "")
+//            println(text.substring(0,8))
         val x = paddingLeft.toFloat()
         var lineY = paddingTop - textPaint.fontMetrics.ascent
         val text = text.toString()
@@ -47,12 +49,12 @@ class NovelTextView @JvmOverloads constructor(context: Context, attrs: Attribute
                 break
             }
             else if (text.substring(lineStart, lineStart + count).contains("\n")) {
-                val lineEnd = lineStart + text.substring(lineStart, lineStart + count).indexOf("\n")
+                val lineEnd = lineStart + text.substring(lineStart, lineStart + count).indexOf("\n") + 1
                 val thisLine = text.substring(lineStart, lineEnd)
                 lineEndIndex.add(lineEnd)
                 lineText.add(thisLine)
                 canvas.drawText(thisLine, x, lineY, textPaint)
-                lineStart = lineEnd + 1
+                lineStart = lineEnd
                 lineY += textPaint.fontMetrics.descent - textPaint.fontMetrics.ascent + lineSpacing
             } else if (run { try {
                     symbols.contains(text[lineStart + count])
@@ -61,29 +63,53 @@ class NovelTextView @JvmOverloads constructor(context: Context, attrs: Attribute
                 } }){
                 //让标点符号能够显示在同一行
                 val lineEnd = lineStart + count + 1
-                val thisLine = text.substring(lineStart, lineEnd)
-                lineEndIndex.add(lineEnd)
-                lineText.add(thisLine)
-                val textWidth = textPaint.measureText(thisLine)
-                val space = (maxWidth - textWidth) / (thisLine.length - 1)
-                textPaint.letterSpacing += space / textSizePx
-//                println(textSizePx * textPaint.letterSpacing)
-//                println("${ textPaint.measureText(text.substring(lineStart, lineEnd)) } $maxWidth")
-                canvas.drawText(thisLine, x, lineY, textPaint)
-                lineStart = lineEnd
-                lineY += textPaint.fontMetrics.descent - textPaint.fontMetrics.ascent + lineSpacing
+                if (text[lineEnd].toString() == "\n"){
+                    val thisLine = text.substring(lineStart, lineEnd)
+                    println(thisLine)
+                    lineEndIndex.add(lineEnd + 1)
+                    lineText.add(thisLine)
+                    val textWidth = textPaint.measureText(thisLine)
+                    val space = (maxWidth - textWidth) / (thisLine.length - 1)
+                    textPaint.letterSpacing += space / textSizePx
+                    canvas.drawText(thisLine, x, lineY, textPaint)
+                    lineStart = lineEnd + 1
+                    lineY += textPaint.fontMetrics.descent - textPaint.fontMetrics.ascent + lineSpacing
+                }
+                else {
+                    val thisLine = text.substring(lineStart, lineEnd)
+                    lineEndIndex.add(lineEnd)
+                    lineText.add(thisLine)
+                    val textWidth = textPaint.measureText(thisLine)
+                    val space = (maxWidth - textWidth) / (thisLine.length - 1)
+                    textPaint.letterSpacing += space / textSizePx
+                    canvas.drawText(thisLine, x, lineY, textPaint)
+                    lineStart = lineEnd
+                    lineY += textPaint.fontMetrics.descent - textPaint.fontMetrics.ascent + lineSpacing
+                }
             }else{
                 val lineEnd = lineStart + count
-                val thisLine = text.substring(lineStart, lineEnd)
-//                println("${ textPaint.measureText(text.substring(lineStart, lineEnd)) } $maxWidth")
-                lineText.add(thisLine)
-                lineEndIndex.add(lineEnd)
-                val textWidth = textPaint.measureText(thisLine)
-                val space = (maxWidth - textWidth) / (thisLine.length - 1)
-                textPaint.letterSpacing += space / textSizePx
-                canvas.drawText(text.substring(lineStart, lineEnd), x, lineY, textPaint)
-                lineStart = lineEnd
-                lineY += textPaint.fontMetrics.descent - textPaint.fontMetrics.ascent + lineSpacing
+                if (text[lineEnd] == '\n'){
+                    val thisLine = text.substring(lineStart, lineEnd)
+                    lineText.add(thisLine)
+                    lineEndIndex.add(lineEnd + 1)
+                    val textWidth = textPaint.measureText(thisLine)
+                    val space = (maxWidth - textWidth) / (thisLine.length - 1)
+                    textPaint.letterSpacing += space / textSizePx
+                    canvas.drawText(text.substring(lineStart, lineEnd), x, lineY, textPaint)
+                    lineStart = lineEnd + 1
+                    lineY += textPaint.fontMetrics.descent - textPaint.fontMetrics.ascent + lineSpacing
+                }
+                else {
+                    val thisLine = text.substring(lineStart, lineEnd)
+                    lineText.add(thisLine)
+                    lineEndIndex.add(lineEnd)
+                    val textWidth = textPaint.measureText(thisLine)
+                    val space = (maxWidth - textWidth) / (thisLine.length - 1)
+                    textPaint.letterSpacing += space / textSizePx
+                    canvas.drawText(text.substring(lineStart, lineEnd), x, lineY, textPaint)
+                    lineStart = lineEnd
+                    lineY += textPaint.fontMetrics.descent - textPaint.fontMetrics.ascent + lineSpacing
+                }
             }
         }
     }
@@ -91,8 +117,6 @@ class NovelTextView @JvmOverloads constructor(context: Context, attrs: Attribute
     fun getLineCountCus(): Int {
         return lineText.size
     }
-
-
 
     fun getLineText(line: Int): String {
         return lineText[line]
