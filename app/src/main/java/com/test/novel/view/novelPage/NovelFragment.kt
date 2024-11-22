@@ -37,7 +37,7 @@ class NovelFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        novelFragmentViewModel = ViewModelProvider(this).get(NovelFragmentViewModel::class.java)
+        novelFragmentViewModel = ViewModelProvider(this)[NovelFragmentViewModel::class.java]
         arguments?.let { bundle ->
             param1 = bundle.getInt(ARG_PARAM1)
 //            param1?.let { novelFragmentViewModel.init(it) }

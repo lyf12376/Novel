@@ -74,4 +74,6 @@ dependencies {
     //navigation
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
+    //glide
+    implementation(libs.glide)
 }

@@ -17,18 +17,29 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <CheckBox
+        android:id="@+id/bookCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/bookCover"
+        app:layout_constraintEnd_toEndOf="@+id/bookCover" />
+
     <TextView
         android:id="@+id/bookTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="伏天氏"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bookCover" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

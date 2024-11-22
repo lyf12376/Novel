@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/BookStoreFragment"
+        android:icon="@drawable/book_store"
+        android:title="书城" />
+
+    <item
+        android:id="@+id/BookShelfFragment"
+        android:icon="@drawable/book_shelf"
+        android:title="书架" />
+
+    <item
+        android:id="@+id/UserFragment"
+        android:icon="@drawable/mine"
+        android:title="我的" />
+</menu>

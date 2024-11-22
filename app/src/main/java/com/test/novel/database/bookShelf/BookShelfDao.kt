@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BookShelfDao {
     @Insert
-    suspend fun addBook(book: Book)
+    suspend fun addBook(bookInShelf: BookInShelf)
 
-    @Query("DELETE FROM Book WHERE id = :bookId")
-    suspend fun deleteBook(bookId:Int)
+    @Query("DELETE FROM BookInShelf WHERE id IN (:bookIds)")
+    suspend fun deleteBooks(bookIds: List<Int>)
 
-    @Query("SELECT * FROM Book")
-    fun getAllBooks(): Flow<List<Book>>
+    @Query("SELECT * FROM BookInShelf")
+    fun getAllBooks(): Flow<List<BookInShelf>>
 
 
 }

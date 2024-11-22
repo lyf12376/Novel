@@ -2,6 +2,8 @@ package com.test.novel.di
 
 import android.content.Context
 import com.coder.vincent.sharp_retrofit.call_adapter.flow.FlowCallAdapterFactory
+import com.test.novel.database.bookShelf.BookShelfDao
+import com.test.novel.database.bookShelf.BookShelfDatabase
 import com.test.novel.network.search.SearchService
 import dagger.Module
 import dagger.Provides
@@ -52,6 +54,12 @@ object AppModule {
     @Provides
     fun provideSearchService(retrofit: Retrofit): SearchService {
         return retrofit.create(SearchService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideBookShelfDao(@ApplicationContext context: Context): BookShelfDao {
+        return BookShelfDatabase.getDatabase(context).bookShelfDao()
     }
 
 

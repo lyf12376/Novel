@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@+id/NovelFragment">
+    app:startDestination="@+id/BookShelfFragment">
 
     <fragment
         android:id="@+id/NovelFragment"
@@ -29,16 +29,39 @@
         <!--            app:destination="@id/secondFragment" />-->
         <action
             android:id="@+id/action_HomeFragment_to_NovelFragment"
-            app:destination="@id/bookShelfFragment"
+            app:destination="@id/BookShelfFragment"
             app:launchSingleTop="false"
             app:popUpToInclusive="false" />
     </fragment>
 
     <fragment
-        android:id="@+id/bookShelfFragment"
+        android:id="@+id/BookShelfFragment"
         android:name="com.test.novel.view.bookShelfPage.BookShelfFragment"
         android:label="BookShelfFragment"
         tools:layout="@layout/fragment_book_shelf">
+<!--        <action-->
+<!--            android:id="@+id/action_BookShelfFragment_to_NovelFragment"-->
+<!--            app:destination="@id/NovelFragment" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_BookShelfFragment_to_bookStoreFragment"-->
+<!--            app:destination="@id/bookStoreFragment" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_BookShelfFragment_to_userFragment"-->
+<!--            app:destination="@id/userFragment" />-->
+    </fragment>
+
+    <fragment
+        android:id="@+id/BookStoreFragment"
+        android:name="com.test.novel.view.bookStore.BookStoreFragment"
+        android:label="BookShelfFragment"
+        tools:layout="@layout/fragment_book_shelf">
+    </fragment>
+
+    <fragment
+        android:id="@+id/UserFragment"
+        android:name="com.test.novel.view.userPage.UserFragment"
+        android:label="UserFragment"
+        tools:layout="@layout/fragment_user">
     </fragment>
 
 
