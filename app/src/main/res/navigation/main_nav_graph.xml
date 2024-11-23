@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@+id/BookShelfFragment">
+    app:startDestination="@+id/SplashScreen">
 
     <fragment
         android:id="@+id/NovelFragment"
@@ -64,8 +64,12 @@
         tools:layout="@layout/fragment_user">
     </fragment>
 
-
-
+    <fragment
+        android:id="@+id/SplashScreen"
+        android:name="com.test.novel.view.customView.SplashFragment"
+        android:label="SplashFragment"
+        tools:layout="@layout/fragment_splash">
+    </fragment>
 
 
 </navigation>

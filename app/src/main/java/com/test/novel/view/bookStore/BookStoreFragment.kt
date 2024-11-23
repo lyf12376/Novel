@@ -25,7 +25,6 @@ class BookStoreFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // TODO: Use the ViewModel
     }
 
     override fun onCreateView(
@@ -42,9 +41,9 @@ class BookStoreFragment : Fragment() {
         constraintSet.clone(binding.SearchBar)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(0, 0, 0, systemBars.bottom)
-            constraintSet.setMargin(binding.searchBox.id,ConstraintSet.TOP,binding.searchBox.marginTop + systemBars.top)
-            constraintSet.applyTo(binding.SearchBar)
+            v.setPadding(0, systemBars.top, 0, systemBars.bottom)
+//            constraintSet.setMargin(binding.searchBox.id,ConstraintSet.TOP,binding.searchBox.marginTop + systemBars.top)
+//            constraintSet.applyTo(binding.SearchBar)
             insets
         }
     }

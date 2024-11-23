@@ -76,4 +76,7 @@ dependencies {
     implementation(libs.navigation.ui.ktx)
     //glide
     implementation(libs.glide)
+    //splashScreen
+    implementation(libs.androidx.core.splashscreen)
+
 }
