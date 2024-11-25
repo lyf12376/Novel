@@ -22,6 +22,7 @@ class BookAdapter(fragment: Fragment, private val viewModel: BookShelfViewModel)
     private var bookInShelfList: List<BookInShelf> = listOf()
     private var isDeleteMode = false
 
+
     init {
         viewModel.state.onEach { state ->
             updateData(state.changedIndex,state.bookInShelfList,state.isDeleteMode)

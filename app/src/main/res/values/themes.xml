@@ -5,4 +5,10 @@
 
     <style name="Theme.Novel" parent="Base.Theme.Novel">
     </style>
+
+    <style name="CircleImageViewStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>

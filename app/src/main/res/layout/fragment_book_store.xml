@@ -52,7 +52,7 @@
 
 
         <LinearLayout
-            android:id="@+id/bookShelf"
+            android:id="@+id/recommend"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal"
@@ -60,7 +60,7 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <TextView
-                android:id="@+id/bookShelfText"
+                android:id="@+id/RecommendText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -74,16 +74,16 @@
 
 
         <LinearLayout
-            android:id="@+id/readHistory"
+            android:id="@+id/classical"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="16dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/bookShelf">
+            app:layout_constraintStart_toEndOf="@+id/recommend">
 
             <TextView
-                android:id="@+id/readHistoryText"
+                android:id="@+id/classicalText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -99,7 +99,9 @@
         android:id="@+id/recycle"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ItemBar" />
 

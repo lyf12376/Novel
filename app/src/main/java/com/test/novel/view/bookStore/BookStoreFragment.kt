@@ -2,6 +2,7 @@ package com.test.novel.view.bookStore
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +11,13 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginTop
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.test.novel.R
 import com.test.novel.databinding.FragmentBookShelfBinding
 import com.test.novel.databinding.FragmentBookStoreBinding
+import com.test.novel.model.BookBrief
+import kotlin.math.log
 
 class BookStoreFragment : Fragment() {
 
@@ -24,7 +29,6 @@ class BookStoreFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -41,10 +45,37 @@ class BookStoreFragment : Fragment() {
         constraintSet.clone(binding.SearchBar)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(0, systemBars.top, 0, systemBars.bottom)
+            v.setPadding(0, systemBars.top, 0, 0)
 //            constraintSet.setMargin(binding.searchBox.id,ConstraintSet.TOP,binding.searchBox.marginTop + systemBars.top)
 //            constraintSet.applyTo(binding.SearchBar)
             insets
         }
+        val navController = findNavController()
+        val adapter = BookStoreAdapter(this, viewModel)
+        binding.recycle.adapter = adapter
+        viewModel.setIntent(
+            BookStoreIntent.InitData(
+                listOf(
+                    BookBrief("title", 0, "author", brief = "brief"),
+                    BookBrief("title", 0, "author", brief = "brief"),
+                    BookBrief("title", 0, "author", brief = "brief"),
+                    BookBrief("title", 0, "author", brief = "brief"),
+                ),
+                listOf(
+                    BookBrief("title", 0, "author", brief = "brief"),
+                    BookBrief("title", 0, "author", brief = "brief"),
+                    BookBrief("title", 0, "author", brief = "brief"),
+                    BookBrief("title", 0, "author", brief = "brief"),
+                )
+            )
+        )
+        binding.SearchBar.setOnClickListener {
+
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("TAG", "onDestroy: ")
     }
 }
