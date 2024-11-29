@@ -1,12 +1,16 @@
 package com.test.novel.view.bookStore
 
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.test.novel.R
 import com.test.novel.databinding.RandomBookItemBinding
 import com.test.novel.databinding.RandomViewBinding
@@ -15,8 +19,10 @@ import com.test.novel.databinding.RankViewBinding
 import com.test.novel.model.BookBrief
 import com.test.novel.utils.SizeUtils
 import com.test.novel.view.customView.GridSpacingItemDecoration
+import com.test.novel.view.novelPage.NovelFragment
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.json.Json
 
 class BookStoreAdapter(private val fragment: Fragment, private val viewModel: BookStoreViewModel) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -56,9 +62,11 @@ class BookStoreAdapter(private val fragment: Fragment, private val viewModel: Bo
 
         inner class RankViewItemHolder(view: View) : RecyclerView.ViewHolder(view) {
             private val binding = RankBookItemBinding.bind(view)
+            val main = view
             val bookCover = binding.bookCover
             val bookTitle = binding.bookName
             val rank = binding.rank
+            val type = binding.type
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RankViewItemHolder {
@@ -68,9 +76,22 @@ class BookStoreAdapter(private val fragment: Fragment, private val viewModel: Bo
         }
 
         override fun onBindViewHolder(holder: RankViewItemHolder, position: Int) {
+            holder.main.setOnClickListener {
+                val action = BookStoreFragmentDirections.actionBookStoreFragmentToNovelFragment(Json.encodeToString(BookBrief.serializer(), rankList[position]))
+                findNavController(fragment).navigate(action)
+            }
             val book = rankList[position]
             holder.bookTitle.text = book.title
-            holder.rank.text = book.bookId.toString()
+            holder.rank.text = String.format("%d", position + 1)
+            if (position < 3) {
+                holder.rank.setTextColor(Color.parseColor("#cfa570"))
+            }
+            //去除两边的括号
+            holder.type.text = book.type.joinToString(" ") { it }
+            Glide.with(fragment)
+                .load(book.coverUrl)
+                .placeholder(R.drawable.cover1)
+                .into(holder.bookCover)
         }
 
         override fun getItemCount(): Int {

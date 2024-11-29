@@ -4,13 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:padding="8dp">
 
     <ImageView
-        android:id="@+id/bookCover"
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
-        android:layout_height="64dp"
-        android:layout_margin="8dp"
+        android:layout_height="100dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/cover1"
@@ -18,41 +17,40 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <TextView
-        android:id="@+id/rank"
+        android:id="@+id/book_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:paddingHorizontal="8dp"
-        android:text="1"
-        android:textSize="16sp"
-        android:textStyle="bold"
-
-        app:layout_constraintStart_toEndOf="@+id/bookCover"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/bookName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="伏天氏"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/rank"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/type"
+        android:id="@+id/book_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="单女主"
-        android:textStyle="normal"
-        android:textColor="#cfa570"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/bookName"
-        app:layout_constraintTop_toBottomOf="@+id/bookName" />
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="第一章"
+        android:textColor="#7C7C7C"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/book_name" />
+
+    <TextView
+        android:id="@+id/add_to_bookshelf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/history_add"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="8dp"
+        android:text="加入书架"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/book_name" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

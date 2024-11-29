@@ -17,6 +17,7 @@ import com.test.novel.R
 import com.test.novel.databinding.FragmentBookShelfBinding
 import com.test.novel.databinding.FragmentBookStoreBinding
 import com.test.novel.model.BookBrief
+import com.test.novel.utils.SizeUtils
 import kotlin.math.log
 
 class BookStoreFragment : Fragment() {
@@ -45,6 +46,8 @@ class BookStoreFragment : Fragment() {
         constraintSet.clone(binding.SearchBar)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            SizeUtils.statusBarHeight = systemBars.top
+            SizeUtils.navigationBarHeight = systemBars.bottom
             v.setPadding(0, systemBars.top, 0, 0)
 //            constraintSet.setMargin(binding.searchBox.id,ConstraintSet.TOP,binding.searchBox.marginTop + systemBars.top)
 //            constraintSet.applyTo(binding.SearchBar)
@@ -53,22 +56,6 @@ class BookStoreFragment : Fragment() {
         val navController = findNavController()
         val adapter = BookStoreAdapter(this, viewModel)
         binding.recycle.adapter = adapter
-        viewModel.setIntent(
-            BookStoreIntent.InitData(
-                listOf(
-                    BookBrief("title", 0, "author", brief = "brief"),
-                    BookBrief("title", 0, "author", brief = "brief"),
-                    BookBrief("title", 0, "author", brief = "brief"),
-                    BookBrief("title", 0, "author", brief = "brief"),
-                ),
-                listOf(
-                    BookBrief("title", 0, "author", brief = "brief"),
-                    BookBrief("title", 0, "author", brief = "brief"),
-                    BookBrief("title", 0, "author", brief = "brief"),
-                    BookBrief("title", 0, "author", brief = "brief"),
-                )
-            )
-        )
         binding.SearchBar.setOnClickListener {
 
         }

@@ -4,6 +4,7 @@ plugins {
     kotlin("plugin.serialization")
     id("dagger.hilt.android.plugin")
     kotlin("kapt")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -78,5 +79,9 @@ dependencies {
     implementation(libs.glide)
     //splashScreen
     implementation(libs.androidx.core.splashscreen)
+    //permission
+    implementation(libs.accompanist.permissions)
+    //swipeRefresh
+    implementation(libs.androidx.swiperefreshlayout)
 
 }

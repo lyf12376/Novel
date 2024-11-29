@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.test.novel.R
 import com.test.novel.databinding.FragmentPageBinding
 import com.test.novel.utils.SizeUtils
@@ -81,22 +82,23 @@ class PageFragment : Fragment() {
                             binding.title.text = title
                         }
                     }
+                    binding.novelChapter.text = "第${chapterIndex}章"
+                    binding.topicBack.setOnClickListener {
+                        this@PageFragment.findNavController().popBackStack()
+                    }
                     novelText.post {
                         val example = text
-                        // 获取 Paint 对象以测量字符宽度
                         novelText.text = example
-//                        novelText.logAll()
                         if (load)
                             return@post
                         var pageLines = SizeUtils.getPageLineCount(novelText)
-//                        println("pageLines $pageLines")
                         val maxLines = novelText.getLineCountCus()
                         if (maxLines <= pageLines) {
                             novelText.text = example
                             return@post
                         }
-//                        println("maxLines $maxLines")
                         var lineEndOffset = novelText.getLineEnd(pageLines-1)
+                        //TODO BUGFIX
                         val textShowInPage = example?.substring(0,lineEndOffset)
                         var nextStartLine = pageLines - 1
                         pageLines ++

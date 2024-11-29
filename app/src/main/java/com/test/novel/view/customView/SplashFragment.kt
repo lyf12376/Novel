@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.test.novel.R
 
@@ -50,19 +51,14 @@ class SplashFragment : Fragment() {
     }
 
     private fun navigateToTargetPage(navController: NavController) {
-        navController.navigate(R.id.BookStoreFragment)
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.SplashScreen, true) // 替换为当前页面的 ID
+            .build()
+
+        navController.navigate(R.id.BookStoreFragment, null, navOptions)
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SplashFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             SplashFragment().apply {

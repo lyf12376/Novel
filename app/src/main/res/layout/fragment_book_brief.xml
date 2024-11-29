@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e1d8d1">
+
+    <ImageView
+        android:id="@+id/bookCover"
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_marginTop="72dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/cover1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bookName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="伏天氏"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_goneMarginTop="8dp"
+        android:gravity="center"
+        android:paddingBottom="8dp"
+        android:layout_marginHorizontal="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bookCover" />
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="蚕茧里的牛"
+        android:textSize="18sp"
+        android:textStyle="normal"
+        android:textColor="#191919"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bookName" />
+
+    <LinearLayout
+        android:id="@+id/typeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/author">
+
+        <TextView
+            android:id="@+id/typeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:text="简介"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_marginStart="16dp" />
+
+        <TextView
+            android:id="@+id/type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="单女主    玄幻"
+            android:textStyle="normal"
+            android:textColor="#4C4C4C"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/introduction"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="天地皆灵，万物皆苟，无名天地之时，有名万物之母，此乃吞天神鼎，可凝精作物，并八荒之心。得此鼎，吞四海，容八荒……一代邪神，踏天之路！关注微信公众号搜索：《铁马飞桥》点击关注，不定时有剧 情方面的更新！公布一个群号：2243825184w0-7528"
+        android:textSize="16sp"
+        android:textStyle="normal"
+        android:textColor="#4C4C4C"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/typeLayout" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/startReading"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="开始阅读"-->
+<!--        android:textSize="20sp"-->
+<!--        android:padding="8dp"-->
+<!--        android:background="@drawable/start_read_bkg"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/introduction" />-->
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

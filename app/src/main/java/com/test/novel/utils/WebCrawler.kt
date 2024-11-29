@@ -1,5 +1,6 @@
 package com.test.novel.utils
 
+import com.test.novel.model.BookBrief
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -50,7 +51,6 @@ object WebCrawler {
             }
         }
     }
-
 
     // 定义网络请求的重试逻辑
     private suspend fun fetchHtmlWithRetry(url: String, retries: Int = 3): String? {
@@ -116,47 +116,124 @@ object WebCrawler {
         val latestUpdateTime: List<String> = listOf()
     )
 
+    private suspend fun parseBQGTop(html: String): List<BookBrief> {
+        val doc = Jsoup.parse(html)
+        val items = doc.select(".top .lis li") // 一次性获取所有书籍条目
+        val bookUrl = mutableListOf<String>()
+        val books = items.mapNotNull { item ->
+            try {
+                val category = item.select(".s1").text()
+                val bookName = item.select(".s2 a").text()
+                bookUrl.add(item.select(".s2 a").attr("href"))
+                val author = item.select(".s5").text()
+                BookBrief(bookId = bookUrl.last().split("/")[2].toInt(), title = bookName, author = author, type = listOf(category))
+            } catch (e: Exception) {
+                println("Error parsing book: ${e.message}")
+                null
+            }
+        }
 
+
+        // 并发获取详情信息
+        val detailedBooks = coroutineScope {
+            books.map { book ->
+                async {
+                    try {
+                        val detailedInfo = fetchBookInfo(bookUrl[books.indexOf(book)])
+                        book.copy(
+                            status = detailedInfo.status,
+                            brief = detailedInfo.brief,
+                            coverUrl = detailedInfo.coverUrl
+                        )
+                    } catch (e: Exception) {
+                        println("Error fetching details for ${book.title}: ${e.message}")
+                        book
+                    }
+                }
+            }.awaitAll()
+        }
+
+        return detailedBooks
+    }
 
 
     // 解析HTML内容，提取正文
-    private fun parseBQGHtml(html: String): String {
+    private fun parseBQGHtml(html: String): Pair<String,String> {
         val doc: Document = Jsoup.parse(html)
         val contentDiv = doc.selectFirst("#chaptercontent")
-        val chapterName = doc.selectFirst("h1.wap_none")?.text()
+        val chapterName = doc.selectFirst("h1.wap_none")?.text()!!
         println(chapterName)
 
         return if (contentDiv != null) {
-            contentDiv.text().replace("\\s+".toRegex(), "\n").split("<br><br>").dropLast(2).joinToString("\n")
+            val text = contentDiv.text().replace("\\s+".toRegex(), "\n").split("\n").dropLast(2).drop(1).joinToString("\n") {
+                "\u3000\u3000$it"
+            }
+            Pair(chapterName,text)
         } else {
             println("没有找到正文内容")
-            ""
+            Pair("","")
+        }
+    }
+
+    private fun parseBookInfo(html: String):BookBrief{
+        val doc: Document = Jsoup.parse(html)
+        val status = if (doc.select(".small span")[1].text().contains("连载")) "连载" else "完结"
+        val brief = doc.select(".intro dd").text() + doc.select(".intro .noshow").text()
+        val coverUrl = doc.select(".cover img").attr("src")
+        return BookBrief(
+            status = status,
+            brief = brief,
+            coverUrl = coverUrl
+        )
+    }
+
+    // 获取笔趣阁排行榜
+    suspend fun fetchBQGTop(): List<BookBrief> {
+        val url = "https://www.3bqg.cc/"
+        val html = fetchHtmlWithRetry(url)
+        return if (html != null) {
+            parseBQGTop(html)
+        } else {
+            println("无法从 $url 获取内容")
+            listOf()
+        }
+    }
+
+    //获取某个书籍详情页
+    suspend fun fetchBookInfo(bookUrl:String):BookBrief{
+        val bookUrl = "https://www.3bqg.cc$bookUrl"
+        val html = fetchHtmlWithRetry(bookUrl)
+        return if (html != null){
+            parseBookInfo(html)
+        }else{
+            println("无法从 $bookUrl 获取内容")
+            BookBrief()
         }
     }
 
     // 使用协程并发抓取多个章节
-    suspend fun fetchChapters(chapters: List<Int>): List<String> = coroutineScope {
+    suspend fun fetchChapters(bookId:Int,chapters: List<Int>): List<Pair<String,String>> = coroutineScope {
         chapters.map { chapter ->
             async {
                 try {
-                    fetchChapter(chapter)
+                    fetchChapter(bookId,chapter)
                 } catch (e: Exception) {
                     println("Error fetching chapter $chapter: ${e.message}")
-                    ""
+                    Pair("","")
                 }
             }
         }.awaitAll()
     }
 
     // 抓取单个章节
-    suspend fun fetchChapter(chapter: Int): String {
-        val url = "https://www.3bqg.cc/book/10376/${chapter}.html"
+    suspend fun fetchChapter(bookId:Int,chapter: Int): Pair<String,String> {
+        val url = "https://www.3bqg.cc/book/${bookId}/${chapter}.html"
         val html = fetchHtmlWithRetry(url)
         return if (html != null) {
             parseBQGHtml(html)
         } else {
             println("无法从 $url 获取内容")
-            ""
+            Pair("","")
         }
     }
 
@@ -176,7 +253,7 @@ fun main() {
     // 替换为你需要爬取的实际 URL
     runBlocking {
         val time = measureTime {
-            println(Json.encodeToString(WebCrawler.fetchQD()))
+            println(WebCrawler.fetchBQGTop())
         }
         println(time)
     }

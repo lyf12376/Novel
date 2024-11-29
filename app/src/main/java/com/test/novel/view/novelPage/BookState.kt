@@ -8,12 +8,25 @@ data class BookState(
     val title: String = "",
     val bookId: Int = 0,
     val author: String = "",
+    val type: List<String> = listOf(),
+    val coverUrl: String = "",
     val brief:String = "",
     val currentIndex: Int = 0,
     val showBar: Boolean = false,
     val pageCount: MutableList<Int> = mutableListOf(),
     val pages: MutableList<PageState> = mutableListOf()
-)
+){
+    fun getBrief():BookBrief{
+        return BookBrief(
+            title = title,
+            bookId = bookId,
+            author = author,
+            type = type,
+            coverUrl = coverUrl,
+            brief = brief
+        )
+    }
+}
 
 @Serializable
 data class PageState(

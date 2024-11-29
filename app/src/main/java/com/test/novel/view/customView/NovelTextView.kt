@@ -63,7 +63,11 @@ class NovelTextView @JvmOverloads constructor(context: Context, attrs: Attribute
                 } }){
                 //让标点符号能够显示在同一行
                 val lineEnd = lineStart + count + 1
-                if (text[lineEnd].toString() == "\n"){
+                if (try {
+                        text[lineEnd].toString() == "\n"
+                }catch (e:Exception){
+                    false
+                }){
                     val thisLine = text.substring(lineStart, lineEnd)
                     println(thisLine)
                     lineEndIndex.add(lineEnd + 1)

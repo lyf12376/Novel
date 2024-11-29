@@ -3,6 +3,7 @@ package com.test.novel.view.bookShelfPage
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.test.novel.R
 import com.test.novel.databinding.FragmentBookShelfBinding
+import com.test.novel.utils.SizeUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -80,13 +82,6 @@ class BookShelfFragment : Fragment() {
 
             }
         }
-
-//        binding.bookShelf.setOnClickListener {
-//            viewModel.selectItem(0)
-//        }
-//        binding.readHistory.setOnClickListener {
-//            viewModel.selectItem(1)
-//        }
     }
 }
 

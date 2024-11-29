@@ -4,4 +4,5 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     kotlin("plugin.serialization") version "1.9.24" apply false
     id("com.google.dagger.hilt.android") version "2.52" apply false
+    id("androidx.navigation.safeargs.kotlin") version "2.8.4" apply false
 }

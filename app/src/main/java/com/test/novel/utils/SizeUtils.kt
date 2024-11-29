@@ -6,6 +6,9 @@ import android.widget.TextView
 import com.test.novel.view.customView.NovelTextView
 
 object SizeUtils {
+    var navigationBarHeight = 0
+    var statusBarHeight = 0
+
     fun dp2px(dp: Float): Int {
         val scale = AppUtils.context.resources.displayMetrics.density
         return (dp * scale).toInt()

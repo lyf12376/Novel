@@ -14,9 +14,9 @@
 <!--            android:id="@+id/action_firstFragment_to_secondFragment"-->
 <!--            app:destination="@id/secondFragment" />-->
         <argument
-            android:name="novelId"
-            app:argType="integer"
-            android:defaultValue="12436" />
+            android:name="bookBrief"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 
     <fragment
@@ -48,6 +48,9 @@
 <!--        <action-->
 <!--            android:id="@+id/action_BookShelfFragment_to_userFragment"-->
 <!--            app:destination="@id/userFragment" />-->
+        <action
+            android:id="@+id/action_BookShelfFragment_to_NovelFragment"
+            app:destination="@id/NovelFragment" />
     </fragment>
 
     <fragment
@@ -55,6 +58,9 @@
         android:name="com.test.novel.view.bookStore.BookStoreFragment"
         android:label="BookShelfFragment"
         tools:layout="@layout/fragment_book_shelf">
+        <action
+            android:id="@+id/action_BookStoreFragment_to_NovelFragment"
+            app:destination="@id/NovelFragment" />
     </fragment>
 
     <fragment
