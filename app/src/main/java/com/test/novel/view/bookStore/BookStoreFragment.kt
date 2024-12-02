@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.marginTop
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +31,7 @@ class BookStoreFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.setIntent(BookStoreIntent.InitData)
     }
 
     override fun onCreateView(
@@ -44,20 +46,26 @@ class BookStoreFragment : Fragment() {
         val binding = FragmentBookStoreBinding.bind(view)
         val constraintSet = ConstraintSet()
         constraintSet.clone(binding.SearchBar)
+        activity?.let {activity->
+            WindowInsetsControllerCompat(activity.window, binding.root).apply {
+                show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             SizeUtils.statusBarHeight = systemBars.top
             SizeUtils.navigationBarHeight = systemBars.bottom
-            v.setPadding(0, systemBars.top, 0, 0)
-//            constraintSet.setMargin(binding.searchBox.id,ConstraintSet.TOP,binding.searchBox.marginTop + systemBars.top)
-//            constraintSet.applyTo(binding.SearchBar)
+            v.setPadding(0, systemBars.top, 0, systemBars.bottom)
             insets
         }
         val navController = findNavController()
         val adapter = BookStoreAdapter(this, viewModel)
         binding.recycle.adapter = adapter
         binding.SearchBar.setOnClickListener {
-
+            navController.navigate(R.id.SearchFragment)
+        }
+        binding.swipe.setOnRefreshListener {
+            viewModel.setIntent(BookStoreIntent.InitData)
         }
     }
 

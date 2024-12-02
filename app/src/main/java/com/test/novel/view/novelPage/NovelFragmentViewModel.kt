@@ -139,6 +139,8 @@ class NovelFragmentViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun showOrHideBar() {
+        if (_state.value.currentIndex == 0)
+            return
         if (_state.value.showBar) {
             _state.value = _state.value.copy(showBar = false)
             hideBarJob?.cancel() // 取消已经存在的协程

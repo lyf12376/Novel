@@ -20,7 +20,7 @@ sealed class BookStoreIntent{
 
     data object Search:BookStoreIntent()
 
-    data class InitData(val rank:List<BookBrief>,val recommend:List<BookBrief>):BookStoreIntent()
+    data object InitData:BookStoreIntent()
 }
 
 

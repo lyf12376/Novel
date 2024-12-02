@@ -88,6 +88,8 @@ class NovelFragment : Fragment() {
         }
         val topBar = binding.topBar
         val bottomBar = binding.bottomBar
+        topBar.visibility = View.GONE
+        bottomBar.visibility = View.GONE
 
         fun animateBars(show: Boolean) {
             if (show) {
@@ -98,6 +100,7 @@ class NovelFragment : Fragment() {
                     .setInterpolator(AccelerateDecelerateInterpolator())
                     .start()
 
+                bottomBar.visibility = View.VISIBLE
                 bottomBar.animate()
                     .translationY(0F)
                     .setDuration(500)
@@ -121,6 +124,7 @@ class NovelFragment : Fragment() {
                     .translationY(bottomBar.height.toFloat() + navigationBarHeight)
                     .setDuration(500)
                     .setInterpolator(AccelerateDecelerateInterpolator())
+                    .withEndAction { topBar.visibility = View.GONE }
                     .start()
 
                 activity?.let {

@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -84,7 +86,7 @@ class PageFragment : Fragment() {
                     }
                     binding.novelChapter.text = "第${chapterIndex}章"
                     binding.topicBack.setOnClickListener {
-                        this@PageFragment.findNavController().popBackStack()
+                        requireParentFragment().findNavController().popBackStack()
                     }
                     novelText.post {
                         val example = text
@@ -109,7 +111,6 @@ class PageFragment : Fragment() {
                             if (nextEndLine > maxLines - 1){
                                 val nextLineEndOffset = novelText.getLineEnd(maxLines - 1)
                                 val nextTextShowInPage = example.substring(lineEndOffset,nextLineEndOffset)
-//                                println("lastPage  $nextTextShowInPage")
                                 pageList.add(PageState(chapterIndex = chapterIndex,title = "",text = nextTextShowInPage,load = true))
                                 break
                             }

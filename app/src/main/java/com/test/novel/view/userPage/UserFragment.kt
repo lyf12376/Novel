@@ -43,7 +43,7 @@ class UserFragment : Fragment() {
             insets
         }
         binding.userAvatar.setOnClickListener{
-            fileComponent.selectImage()
+            fileComponent.selectDocument()
         }
     }
 }

@@ -29,22 +29,59 @@
 
         <LinearLayout
             android:id="@+id/searchBox"
-            android:layout_width="64dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginHorizontal="12dp"
             android:background="@drawable/search_box_bkg"
             android:orientation="horizontal"
-            android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/searchText"
             app:layout_constraintStart_toEndOf="@+id/back"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:id="@+id/searchIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="8dp"
+                android:src="@drawable/search" />
+
+            <EditText
+                android:id="@+id/searchInput"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:padding="8dp"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
+
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/searchText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="搜索"
+            android:textColor="#F96D3F"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

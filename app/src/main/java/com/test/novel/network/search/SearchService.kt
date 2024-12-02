@@ -5,7 +5,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface SearchService {
-    @GET("https://www.3bqg.cc/user/search.html")
-    suspend fun searchNovel(@Query("q") keyWord: String):List<SearchResult>
+    @GET("user/search.html")
+    suspend fun search(@Query("q", encoded = true) keyWord: String):List<SearchResult>
 
 }

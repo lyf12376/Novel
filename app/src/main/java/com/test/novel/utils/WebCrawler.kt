@@ -64,6 +64,10 @@ object WebCrawler {
         return null
     }
 
+    suspend fun fetchFQTop(){
+        println(fetchHtmlWithRetry("https://fanqienovel.com/rank/0_2_8"))
+    }
+
     // 获取起点中文网排行榜
     private fun parseQDHtml(html: String): Rank {
         val doc: Document = Jsoup.parse(html)
@@ -249,11 +253,12 @@ object WebCrawler {
 }
 
 
+
 fun main() {
     // 替换为你需要爬取的实际 URL
     runBlocking {
         val time = measureTime {
-            println(WebCrawler.fetchBQGTop())
+            println(WebCrawler.fetchFQTop())
         }
         println(time)
     }

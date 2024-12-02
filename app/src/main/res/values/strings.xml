@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">黄瓜小说</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search_history">搜索历史</string>
     <string name="splashSentenceOne">吾生也有涯</string>
     <string name="splashSentenceTwo">而知也无涯</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
