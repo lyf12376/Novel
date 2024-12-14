@@ -5,14 +5,14 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.test.novel.database.bookShelf.BookInShelf
+import kotlinx.serialization.Serializable
 
-@Entity(
-    foreignKeys = [ForeignKey(entity = BookInShelf::class, parentColumns = ["id"], childColumns = ["bookId"], onDelete = ForeignKey.CASCADE)],
-    indices = [Index("bookId")]
-)
+@Entity
+@Serializable
 data class Chapter(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val bookId: Int, // 外键，关联 BookInShelf 表
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val bookId: Int = 0,
     val chapterNumber: Int,
     val title: String,
     val content: String

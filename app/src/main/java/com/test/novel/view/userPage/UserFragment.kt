@@ -9,10 +9,20 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.test.novel.R
+import com.test.novel.database.bookShelf.BookShelfDao
+import com.test.novel.database.chapter.ChapterDao
 import com.test.novel.databinding.FragmentUserBinding
 import com.test.novel.utils.file.FileComponent
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class UserFragment : Fragment() {
+    @Inject
+    lateinit var chapterDao: ChapterDao
+    @Inject
+    lateinit var bookShelfDao: BookShelfDao
 
     companion object {
         fun newInstance() = UserFragment()
@@ -23,7 +33,7 @@ class UserFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fileComponent = FileComponent(this)
+        fileComponent = FileComponent(this,bookShelfDao,chapterDao)
         // TODO: Use the ViewModel
     }
 
@@ -42,8 +52,7 @@ class UserFragment : Fragment() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        binding.userAvatar.setOnClickListener{
-            fileComponent.selectDocument()
-        }
+        val adapter = SettingsAdapter(fileComponent)
+        binding.recyclerView.adapter = adapter
     }
 }

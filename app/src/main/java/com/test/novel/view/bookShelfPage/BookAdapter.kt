@@ -9,15 +9,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.test.novel.R
 import com.test.novel.databinding.BookItemBinding
 import com.test.novel.database.bookShelf.BookInShelf
+import com.test.novel.model.BookBrief
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.json.Json
 
-class BookAdapter(fragment: Fragment, private val viewModel: BookShelfViewModel) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
+class BookAdapter(private val fragment: Fragment, private val viewModel: BookShelfViewModel) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 
     private var bookInShelfList: List<BookInShelf> = listOf()
     private var isDeleteMode = false
@@ -64,13 +67,22 @@ class BookAdapter(fragment: Fragment, private val viewModel: BookShelfViewModel)
             if (isDeleteMode) {
                 holder.checkBox.isChecked = !holder.checkBox.isChecked
             }else{
-                viewModel.sendIntent(BookShelfIntent.OpenBook(book.id))
+                val action = BookShelfFragmentDirections.actionBookShelfFragmentToNovelFragment(Json.encodeToString(BookBrief.serializer(),book.getBrief()))
+                println(book)
+                println(Json.encodeToString(BookBrief.serializer(),book.getBrief()))
+                fragment.findNavController().navigate(action)
             }
         }
         holder.bookTitle.text = book.title
-        Glide.with(holder.itemView)
-            .load(R.drawable.cover1)
-            .into(holder.bookCover)
+        if (book.isLocal) {
+            Glide.with(holder.itemView)
+                .load(R.drawable.local_book_cover)
+                .into(holder.bookCover)
+        }else{
+            Glide.with(holder.itemView)
+                .load(book.coverUrl)
+                .into(holder.bookCover)
+        }
     }
 
     override fun getItemCount(): Int {

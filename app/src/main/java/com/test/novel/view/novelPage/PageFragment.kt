@@ -116,7 +116,7 @@ class PageFragment : Fragment() {
                             }
                             else {
                                 val nextLineEndOffset = novelText.getLineEnd(nextEndLine)
-
+                                println("nextLineEndOffset:$nextLineEndOffset")
                                 val nextTextShowInPage =
                                     example.substring(lineEndOffset, nextLineEndOffset)
                                 pageList.add(

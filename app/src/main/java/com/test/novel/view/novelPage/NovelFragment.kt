@@ -24,10 +24,12 @@ import com.test.novel.model.BookBrief
 import com.test.novel.utils.SizeUtils
 import com.test.novel.utils.SizeUtils.navigationBarHeight
 import com.test.novel.utils.SizeUtils.statusBarHeight
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 private const val ARG_PARAM1 = "bookBrief"
+@AndroidEntryPoint
 class NovelFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private val args: NovelFragmentArgs by navArgs()
@@ -38,6 +40,10 @@ class NovelFragment : Fragment() {
         novelFragmentViewModel = ViewModelProvider(this)[NovelFragmentViewModel::class.java]
         val bookBrief = Json.decodeFromString(BookBrief.serializer(), args.bookBrief)
         novelFragmentViewModel.sendIntent(BookIntent.Init(bookBrief))
+        println(bookBrief.isLocal)
+        if (bookBrief.isLocal) {
+            novelFragmentViewModel.sendIntent(BookIntent.GetContentFromLocal(bookBrief.bookId))
+        }
     }
 
     override fun onCreateView(

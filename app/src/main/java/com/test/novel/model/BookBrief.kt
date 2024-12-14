@@ -11,4 +11,5 @@ data class BookBrief(
     val type:List<String> = listOf("玄幻","恋爱"),
     val status:String = "status",
     val brief : String = "brief",
+    val isLocal:Boolean = false
 )

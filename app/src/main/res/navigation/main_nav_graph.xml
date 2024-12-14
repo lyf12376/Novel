@@ -40,9 +40,6 @@
         android:label="BookShelfFragment"
         tools:layout="@layout/fragment_book_shelf">
 <!--        <action-->
-<!--            android:id="@+id/action_BookShelfFragment_to_NovelFragment"-->
-<!--            app:destination="@id/NovelFragment" />-->
-<!--        <action-->
 <!--            android:id="@+id/action_BookShelfFragment_to_bookStoreFragment"-->
 <!--            app:destination="@id/bookStoreFragment" />-->
 <!--        <action-->

@@ -16,5 +16,8 @@ interface BookShelfDao {
     @Query("SELECT * FROM BookInShelf")
     fun getAllBooks(): Flow<List<BookInShelf>>
 
+    @Query("SELECT * FROM BookInShelf WHERE id = :bookId")
+    suspend fun getBookById(bookId: Int): BookInShelf?
+
 
 }

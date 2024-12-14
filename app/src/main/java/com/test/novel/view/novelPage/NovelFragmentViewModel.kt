@@ -3,6 +3,7 @@ package com.test.novel.view.novelPage
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.test.novel.database.chapter.ChapterDao
 import com.test.novel.model.BookBrief
 import com.test.novel.utils.WebCrawler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,12 +14,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class NovelFragmentViewModel @Inject constructor() : ViewModel() {
+class NovelFragmentViewModel @Inject constructor(
+    private val chapterDao: ChapterDao
+) : ViewModel() {
 
     private val _state = MutableStateFlow(BookState())
     val state = _state.asStateFlow()
@@ -84,6 +88,10 @@ class NovelFragmentViewModel @Inject constructor() : ViewModel() {
                 is BookIntent.SetCurrentIndex -> {
                     _state.value = _state.value.copy(currentIndex = intent.index)
                 }
+
+                is BookIntent.GetContentFromLocal -> {
+                    getLocalContent(intent.bookId)
+                }
             }
         }
     }
@@ -98,44 +106,23 @@ class NovelFragmentViewModel @Inject constructor() : ViewModel() {
             coverUrl = bookBrief.coverUrl,
             type = bookBrief.type
         )
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                println(bookBrief.bookId)
-                val content = WebCrawler.fetchChapters(bookId = bookBrief.bookId, listOf(1, 2, 3))
-                val pages = mutableListOf<PageState>()
-                content.forEachIndexed { index, s ->
-                    pages.add(
-                        PageState(
-                            title = content[index].first,
-                            showTitle = true,
-                            chapterIndex = index + 1,
-                            text = s.second,
-                            load = false
-                        )
-                    )
-                }
-                sendIntent(BookIntent.SetContent(pages))
-            }
 
-//                    sendIntent(
-//                        BookIntent.SetContent(
-//                            mutableListOf(
-//                                PageState(
-//                                    title = "第一章 我有三个相宫",
-//                                    showTitle = true,
-//                                    chapterIndex = 1,
-//                                    text = text,
-//                                    load = false
-//                                ),PageState(
-//                                    title = "第二章 我有三个相宫",
-//                                    showTitle = true,
-//                                    chapterIndex = 2,
-//                                    text = text,
-//                                    load = false
-//                                )
-//                            )
-//                        )
-        }
+//        withContext(Dispatchers.IO) {
+//            println(bookBrief.bookId)
+//            val content = WebCrawler.fetchChapters(bookId = bookBrief.bookId, listOf(1, 2, 3))
+//            val pages = mutableListOf<PageState>()
+//            content.forEachIndexed { index, s ->
+//                pages.add(
+//                    PageState(
+//                        title = content[index].first,
+//                        showTitle = true,
+//                        chapterIndex = index + 1,
+//                        text = s.second,
+//                        load = false
+//                    )
+//                )
+//            }
+//            sendIntent(BookIntent.SetContent(pages))
     }
 
     private fun showOrHideBar() {
@@ -150,6 +137,27 @@ class NovelFragmentViewModel @Inject constructor() : ViewModel() {
             hideBarJob = viewModelScope.launch {
                 delay(3000)
                 _state.value = _state.value.copy(showBar = false)
+            }
+        }
+    }
+
+    private suspend fun getLocalContent(bookId: Int) {
+        withContext(Dispatchers.IO) {
+            val chapters = chapterDao.getChapters(bookId)
+            val pages = mutableListOf<PageState>()
+            chapters.collect {
+                it.forEachIndexed { index, chapter ->
+                    pages.add(
+                        PageState(
+                            title = chapter.title,
+                            showTitle = true,
+                            chapterIndex = index + 1,
+                            text = chapter.content,
+                            load = false
+                        )
+                    )
+                }
+                sendIntent(BookIntent.SetContent(pages))
             }
         }
     }

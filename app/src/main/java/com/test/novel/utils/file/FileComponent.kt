@@ -15,15 +15,27 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.test.novel.database.bookShelf.BookInShelf
+import com.test.novel.database.bookShelf.BookShelfDao
+import com.test.novel.database.chapter.Chapter
+import com.test.novel.database.chapter.ChapterDao
 import com.test.novel.utils.AppUtils
+import com.test.novel.utils.Utils.arabicNumberToChinese
+import dagger.hilt.EntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import javax.inject.Inject
+import kotlin.time.measureTime
 
-class FileComponent(private val fragment: Fragment) {
+class FileComponent(
+    private val fragment: Fragment,
+    private val bookShelfDao: BookShelfDao,
+    private val chapterDao: ChapterDao,
+) {
 
     private var openGalleryLauncher: ActivityResultLauncher<Unit?>? = null
     private var takePhotoLauncher: ActivityResultLauncher<Unit?>? = null
@@ -84,15 +96,28 @@ class FileComponent(private val fragment: Fragment) {
         uri?.let {
             CoroutineScope(Dispatchers.IO).launch {
                 val contentResolver = AppUtils.context.contentResolver
-                val fileName = getFileName(contentResolver, uri)
-                val chapters = extractChaptersAsync(contentResolver, uri)
-
-                // 打印每章标题和内容
-                withContext(Dispatchers.Main) {
-                    chapters.forEach { (title, content) ->
-                        Log.d("ChapterHandler", "章节: $title")
+                val fileName = getFileName(contentResolver, uri).split(".")[0]
+                var chapters:List<Chapter>
+                val time = measureTime { chapters = extractChaptersAsync(contentResolver, uri) }
+                //生成书本id(真随机数)
+                val bookId = run {
+                    var id: Int
+                    while (true) {
+                        id = (0..1000000).random()
+                        if (bookShelfDao.getBookById(id) == null)
+                            break
                     }
+                    id
                 }
+                bookShelfDao.addBook(BookInShelf(bookId = bookId, isLocal = true, title = fileName))
+                // 打印每章标题和内容
+                val newChapters = chapters.map {
+                    it.copy(bookId = bookId)
+                }
+
+                chapterDao.insert(
+                    newChapters
+                )
             }
         }
     }
@@ -100,40 +125,55 @@ class FileComponent(private val fragment: Fragment) {
     private suspend fun extractChaptersAsync(
         contentResolver: ContentResolver,
         uri: Uri
-    ): List<Pair<String, String>> = withContext(Dispatchers.IO) {
+    ): List<Chapter> = withContext(Dispatchers.IO) {
+        fun startsWithNumber(input: String): Boolean {
+            val s = input.split(" ")[0]
+            val regex = Regex("^\\d+")
+            return regex.containsMatchIn(s)
+        }
         println("开始解析文档: $uri")
-        val chapters = mutableListOf<Pair<String, String>>()
+        val chapters = mutableListOf<Chapter>()
         val contentBuilder = StringBuilder()
         var currentChapterTitle: String? = null
-
+        var index = 1
+        var isMainText = false
+        var biref = ""
         contentResolver.openBufferedReader(uri).use { reader ->
-            reader.lineSequence().forEach { line ->
-                println(line)
-                val trimmedLine = line.trim()
-                if (trimmedLine.contains(Regex("^第.+章.*"))) {
+            reader.lineSequence().forEachIndexed { index1, line ->
+                if (Regex("^第.+章.*").find(line)?.range?.first == 0 || startsWithNumber(line)) {
                     // 保存上一章节
+                    if (!isMainText) {
+                        currentChapterTitle = line
+                        isMainText = true
+                        biref = contentBuilder.toString()
+                        contentBuilder.clear()
+                        return@forEachIndexed
+                    }
                     currentChapterTitle?.let {
-                        chapters.add(it to contentBuilder.toString())
+                        chapters.add(Chapter(chapterNumber = index ++ , title = it , content = contentBuilder.toString()))
                         contentBuilder.clear()
                     }
-                    currentChapterTitle = trimmedLine
-                } else if (currentChapterTitle != null) {
-                    contentBuilder.appendLine(trimmedLine)
+                    currentChapterTitle = line
+                } else {
+                    contentBuilder.appendLine(line)
                 }
             }
         }
 
         // 保存最后一章
         currentChapterTitle?.let {
-            chapters.add(it to contentBuilder.toString())
+            chapters.add(Chapter(chapterNumber = index , title = it , content = contentBuilder.toString()))
         }
-
+        chapters.forEach{
+            println("章节标题: ${it.title}")
+        }
         chapters
     }
 
     // 扩展函数：简化流操作
     private fun ContentResolver.openBufferedReader(uri: Uri): BufferedReader =
-        openInputStream(uri)?.bufferedReader() ?: throw IllegalArgumentException("无法读取文件: $uri")
+        openInputStream(uri)?.bufferedReader()
+            ?: throw IllegalArgumentException("无法读取文件: $uri")
 
 
     // 辅助函数：从 URI 获取文件名
@@ -147,36 +187,40 @@ class FileComponent(private val fragment: Fragment) {
         return fileName
     }
 
-    private val permissionLauncher = fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) {
-            openGalleryLauncher?.launch(null)
-        } else {
-            showPermissionDialog(0)
+    private val permissionLauncher =
+        fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                openGalleryLauncher?.launch(null)
+            } else {
+                showPermissionDialog(0)
+            }
         }
-    }
 
-    private val cameraPermissionLauncher = fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) {
-            takePhotoLauncher?.launch(null)
-        } else {
-            showPermissionDialog(0)
+    private val cameraPermissionLauncher =
+        fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                takePhotoLauncher?.launch(null)
+            } else {
+                showPermissionDialog(0)
+            }
         }
-    }
 
-    private val documentPermissionLauncher = fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) {
-            openDocumentLauncher?.launch(null)
-        } else {
-            showPermissionDialog(1)
+    private val documentPermissionLauncher =
+        fragment.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                openDocumentLauncher?.launch(null)
+            } else {
+                showPermissionDialog(1)
+            }
         }
-    }
 
-    private fun showPermissionDialog(mode:Int) {
+    private fun showPermissionDialog(mode: Int) {
         AlertDialog.Builder(fragment.requireContext())
             .setTitle("权限请求")
             .setMessage("需要权限以完成操作。请到设置中授予权限。")
             .setPositiveButton("前往设置") { _, _ ->
-                val intent = Intent(if (mode == 1) Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION else Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val intent =
+                    Intent(if (mode == 1) Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION else Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 intent.data = Uri.fromParts("package", fragment.requireContext().packageName, null)
                 fragment.requireContext().startActivity(intent)
             }
@@ -190,7 +234,11 @@ class FileComponent(private val fragment: Fragment) {
         } else {
             Manifest.permission.READ_EXTERNAL_STORAGE
         }
-        if (ContextCompat.checkSelfPermission(fragment.requireContext(), readGalleryPermission) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                fragment.requireContext(),
+                readGalleryPermission
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             openGalleryLauncher?.launch(null)
         } else {
             permissionLauncher.launch(readGalleryPermission)
@@ -199,7 +247,11 @@ class FileComponent(private val fragment: Fragment) {
 
     fun takePhoto() {
         val cameraPermission = Manifest.permission.CAMERA
-        if (ContextCompat.checkSelfPermission(fragment.requireContext(), cameraPermission) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                fragment.requireContext(),
+                cameraPermission
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             takePhotoLauncher?.launch(null)
         } else {
             cameraPermissionLauncher.launch(cameraPermission)
@@ -220,7 +272,7 @@ class FileComponent(private val fragment: Fragment) {
         }
     }
 
-    fun isManageStorageGranted(): Boolean {
+    private fun isManageStorageGranted(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Environment.isExternalStorageManager()
         } else {
@@ -230,6 +282,7 @@ class FileComponent(private val fragment: Fragment) {
             ) == PackageManager.PERMISSION_GRANTED
         }
     }
+
 
 }
 

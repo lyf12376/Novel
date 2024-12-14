@@ -4,6 +4,8 @@ import android.content.Context
 import com.coder.vincent.sharp_retrofit.call_adapter.flow.FlowCallAdapterFactory
 import com.test.novel.database.bookShelf.BookShelfDao
 import com.test.novel.database.bookShelf.BookShelfDatabase
+import com.test.novel.database.chapter.ChapterDao
+import com.test.novel.database.chapter.ChapterDatabase
 import com.test.novel.database.readHistory.SearchHistoryDao
 import com.test.novel.database.readHistory.SearchHistoryDatabase
 import com.test.novel.network.search.SearchService
@@ -79,6 +81,12 @@ object AppModule {
     @Provides
     fun provideSearchHistoryDao(@ApplicationContext context: Context): SearchHistoryDao {
         return SearchHistoryDatabase.getDatabase(context).searchHistoryDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideChapterDao(@ApplicationContext context: Context): ChapterDao {
+        return ChapterDatabase.getDatabase(context).chapterDao()
     }
 
 

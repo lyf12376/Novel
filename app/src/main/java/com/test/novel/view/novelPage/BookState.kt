@@ -48,5 +48,7 @@ sealed class BookIntent {
 
     data class SetCurrentIndex(val index:Int):BookIntent()
 
+    data class GetContentFromLocal(val bookId:Int):BookIntent()
+
 }
 
