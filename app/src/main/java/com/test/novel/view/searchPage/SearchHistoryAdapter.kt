@@ -5,9 +5,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.test.novel.database.readHistory.SearchHistory
+import com.test.novel.database.searchHistory.SearchHistory
 import com.test.novel.databinding.SearchHistoryItemBinding
-import com.test.novel.view.bookStore.BookStoreViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 

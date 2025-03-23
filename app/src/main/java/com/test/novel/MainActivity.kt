@@ -10,10 +10,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.test.novel.databinding.MainBinding
+import com.test.novel.utils.SizeUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +37,14 @@ class MainActivity : AppCompatActivity() {
         // 设置视图
         val binding = MainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            if (SizeUtils.statusBarHeight == 0 && SizeUtils.navigationBarHeight == 0) {
+                SizeUtils.statusBarHeight = systemBars.top
+                SizeUtils.navigationBarHeight = systemBars.bottom
+            }
+            insets
+        }
         // 初始化导航
         val bottomNavigationView = binding.bottomNavigation
         val navHostFragment =

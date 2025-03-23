@@ -1,6 +1,7 @@
 package com.test.novel.view.novelPage
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +23,6 @@ private const val ARG_PARAM1 = "param1"
  * create an instance of this fragment.
  */
 class BookBriefFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,13 +41,19 @@ class BookBriefFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bookBrief = Json.decodeFromString(BookBrief.serializer(), param1!!)
-        val binding = FragmentBookBriefBinding.bind(view)
-        binding.bookName.text = bookBrief.title
-        binding.author.text = bookBrief.author
-        binding.type.text = bookBrief.type.joinToString("    ")
-        Glide.with(this).load(bookBrief.coverUrl).into(binding.bookCover)
-        binding.introduction.text = bookBrief.brief
+        param1?.let { safeParam ->
+            try {
+                val bookBrief = Json.decodeFromString(BookBrief.serializer(), safeParam)
+                val binding = FragmentBookBriefBinding.bind(view)
+                binding.bookName.text = bookBrief.title
+                binding.author.text = bookBrief.author
+                binding.type.text = bookBrief.type.joinToString("    ")
+                Glide.with(this).load(bookBrief.coverUrl).into(binding.bookCover)
+                binding.introduction.text = bookBrief.brief
+            } catch (e: Exception) {
+                Log.e("BookBriefFragment", "Error parsing book brief", e)
+            }
+        }
     }
 
     companion object {

@@ -20,6 +20,20 @@
     </fragment>
 
     <fragment
+        android:id="@+id/ReadFragment"
+        android:name="com.test.novel.view.newNovelPage.ReadFragment"
+        android:label="ReadFragment"
+        tools:layout="@layout/fragment_read">
+        <!--        <action-->
+        <!--            android:id="@+id/action_firstFragment_to_secondFragment"-->
+        <!--            app:destination="@id/secondFragment" />-->
+        <argument
+            android:name="bookBrief"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+    <fragment
         android:id="@+id/HomeFragment"
         android:name="com.test.novel.view.homePage.HomeFragment"
         android:label="NovelFragment"

@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.test.novel.database.chapter.ChapterDao
+import com.test.novel.database.readHistory.ReadHistory
+import com.test.novel.database.readHistory.ReadHistoryDao
 import com.test.novel.model.BookBrief
 import com.test.novel.utils.WebCrawler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NovelFragmentViewModel @Inject constructor(
-    private val chapterDao: ChapterDao
+    private val chapterDao: ChapterDao,
+    private val readHistoryDao: ReadHistoryDao
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BookState())
@@ -56,32 +59,47 @@ class NovelFragmentViewModel @Inject constructor(
                 }
 
                 is BookIntent.SetContent -> {
-                    val pagesCount = _state.value.pageCount
+                    val pagesCount = _state.value.pageCount.toMutableList()
                     intent.pages.forEach { pageState ->
-                        pagesCount.replaceOrAddUntilToIndex(pageState.chapterIndex, 1)
+                        ensurePageCountSize(pagesCount, pageState.chapterIndex)
+                        pagesCount[pageState.chapterIndex - 1] = 1
                     }
-                    _state.value = _state.value.copy(pages = intent.pages)
+                    _state.value = _state.value.copy(pages = intent.pages, pageCount = pagesCount)
                 }
 
                 is BookIntent.AddPages -> {
-                    val pagesCount = _state.value.pageCount
+                    if (intent.pageState.isEmpty()) return@launch
+
+                    val chapterIndex = intent.pageState[0].chapterIndex
+                    val pagesCount = _state.value.pageCount.toMutableList()
+                    ensurePageCountSize(pagesCount, chapterIndex)
+
+                    // Update the page count for this chapter
+                    pagesCount[chapterIndex - 1] = intent.pageState.size
+
+                    // Find the offset for this chapter's first page
+                    var offset = 0
+                    for (i in 0 until chapterIndex - 1) {
+                        offset += pagesCount.getOrElse(i) { 0 }
+                    }
+
+                    // Create new pages list with updated/added pages
                     val newList = _state.value.pages.toMutableList()
-                    var o = 0
-                    _state.value.pageCount.run {
-                        forEachIndexed { index, i ->
-                            if (index < intent.pageState[0].chapterIndex) {
-                                o += i
-                            } else {
-                                return@run
-                            }
+
+                    // Ensure the list has enough capacity
+                    while (newList.size < offset + intent.pageState.size) {
+                        newList.add(PageState(chapterIndex = 0, title = "", text = "", load = false))
+                    }
+
+                    // Replace or add the new pages
+                    for (i in intent.pageState.indices) {
+                        if (offset + i < newList.size) {
+                            newList[offset + i] = intent.pageState[i]
+                        } else {
+                            newList.add(intent.pageState[i])
                         }
                     }
-                    pagesCount.replaceOrAddUntilToIndex(
-                        intent.pageState[0].chapterIndex,
-                        intent.pageState.size
-                    )
-                    newList[o] = intent.pageState[0]
-                    newList.addAll(o + 1, intent.pageState.subList(1, intent.pageState.size))
+
                     _state.value = _state.value.copy(pages = newList, pageCount = pagesCount)
                 }
 
@@ -96,6 +114,11 @@ class NovelFragmentViewModel @Inject constructor(
         }
     }
 
+    private fun ensurePageCountSize(pageCount: MutableList<Int>, chapterIndex: Int) {
+        while (pageCount.size < chapterIndex) {
+            pageCount.add(0)
+        }
+    }
 
     private fun init(bookBrief: BookBrief) {
         _state.value = _state.value.copy(
@@ -107,22 +130,7 @@ class NovelFragmentViewModel @Inject constructor(
             type = bookBrief.type
         )
 
-//        withContext(Dispatchers.IO) {
-//            println(bookBrief.bookId)
-//            val content = WebCrawler.fetchChapters(bookId = bookBrief.bookId, listOf(1, 2, 3))
-//            val pages = mutableListOf<PageState>()
-//            content.forEachIndexed { index, s ->
-//                pages.add(
-//                    PageState(
-//                        title = content[index].first,
-//                        showTitle = true,
-//                        chapterIndex = index + 1,
-//                        text = s.second,
-//                        load = false
-//                    )
-//                )
-//            }
-//            sendIntent(BookIntent.SetContent(pages))
+        sendIntent(BookIntent.GetContentFromLocal(bookBrief.bookId))
     }
 
     private fun showOrHideBar() {
@@ -144,9 +152,9 @@ class NovelFragmentViewModel @Inject constructor(
     private suspend fun getLocalContent(bookId: Int) {
         withContext(Dispatchers.IO) {
             val chapters = chapterDao.getChapters(bookId)
-            val pages = mutableListOf<PageState>()
-            chapters.collect {
-                it.forEachIndexed { index, chapter ->
+            chapters.collect { chapterList ->
+                val pages = mutableListOf<PageState>()
+                chapterList.forEachIndexed { index, chapter ->
                     pages.add(
                         PageState(
                             title = chapter.title,
@@ -160,19 +168,6 @@ class NovelFragmentViewModel @Inject constructor(
                 sendIntent(BookIntent.SetContent(pages))
             }
         }
-    }
-
-
-}
-
-fun MutableList<Int>.replaceOrAddUntilToIndex(index: Int, element: Int) {
-    if (index < size) {
-        this[index] = element
-    } else {
-        while (index > size) {
-            add(0)
-        }
-        add(element)
     }
 }
 

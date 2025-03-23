@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.json.Json
 
-class BookStoreAdapter(private val fragment: Fragment, private val viewModel: BookStoreViewModel) :
+class BookStoreAdapter(private val fragment: Fragment, private val viewModel: BookStoreViewModel,val onDataLoaded:()->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val rankViewAdapter = RankViewAdapter()

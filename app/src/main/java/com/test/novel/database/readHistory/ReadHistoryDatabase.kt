@@ -5,21 +5,21 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [SearchHistory::class], version = 1, exportSchema = false)
-abstract class SearchHistoryDatabase : RoomDatabase() {
-    abstract fun searchHistoryDao(): SearchHistoryDao
+@Database(entities = [ReadHistory::class], version = 1, exportSchema = false)
+abstract class ReadHistoryDatabase: RoomDatabase() {
+    abstract fun readHistoryDao(): ReadHistoryDao
 
-    companion object{
-        const val DATABASE_NAME = "search_history_database"
+    companion object {
+        private const val DATABASE_NAME = "read_history_database"
 
         @Volatile
-        private var INSTANCE: SearchHistoryDatabase? = null
+        private var INSTANCE: ReadHistoryDatabase? = null
 
-        fun getDatabase(context: Context): SearchHistoryDatabase {
+        fun getDatabase(context: Context): ReadHistoryDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context,
-                    SearchHistoryDatabase::class.java,
+                    ReadHistoryDatabase::class.java,
                     DATABASE_NAME
                 ).build()
                 INSTANCE = instance

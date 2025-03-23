@@ -52,14 +52,13 @@ class BookStoreFragment : Fragment() {
             }
         }
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            SizeUtils.statusBarHeight = systemBars.top
-            SizeUtils.navigationBarHeight = systemBars.bottom
-            v.setPadding(0, systemBars.top, 0, systemBars.bottom)
+            v.setPadding(0, SizeUtils.statusBarHeight, 0, SizeUtils.navigationBarHeight)
             insets
         }
         val navController = findNavController()
-        val adapter = BookStoreAdapter(this, viewModel)
+        val adapter = BookStoreAdapter(this, viewModel){
+            binding.swipe.isRefreshing = false
+        }
         binding.recycle.adapter = adapter
         binding.SearchBar.setOnClickListener {
             navController.navigate(R.id.SearchFragment)

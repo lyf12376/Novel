@@ -83,5 +83,6 @@ dependencies {
     implementation(libs.accompanist.permissions)
     //swipeRefresh
     implementation(libs.androidx.swiperefreshlayout)
+    implementation(kotlin("reflect"))
 
 }

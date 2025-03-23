@@ -1,4 +1,4 @@
-package com.test.novel.database.readHistory
+package com.test.novel.database.searchHistory
 
 import androidx.room.Dao
 import androidx.room.Insert

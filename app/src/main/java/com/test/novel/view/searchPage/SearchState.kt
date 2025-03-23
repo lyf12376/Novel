@@ -1,6 +1,6 @@
 package com.test.novel.view.searchPage
 
-import com.test.novel.database.readHistory.SearchHistory
+import com.test.novel.database.searchHistory.SearchHistory
 import com.test.novel.network.search.SearchResult
 
 data class SearchState(

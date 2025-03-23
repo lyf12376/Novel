@@ -6,8 +6,10 @@ import com.test.novel.database.bookShelf.BookShelfDao
 import com.test.novel.database.bookShelf.BookShelfDatabase
 import com.test.novel.database.chapter.ChapterDao
 import com.test.novel.database.chapter.ChapterDatabase
-import com.test.novel.database.readHistory.SearchHistoryDao
-import com.test.novel.database.readHistory.SearchHistoryDatabase
+import com.test.novel.database.readHistory.ReadHistoryDao
+import com.test.novel.database.readHistory.ReadHistoryDatabase
+import com.test.novel.database.searchHistory.SearchHistoryDao
+import com.test.novel.database.searchHistory.SearchHistoryDatabase
 import com.test.novel.network.search.SearchService
 import dagger.Module
 import dagger.Provides
@@ -20,6 +22,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -87,6 +90,12 @@ object AppModule {
     @Provides
     fun provideChapterDao(@ApplicationContext context: Context): ChapterDao {
         return ChapterDatabase.getDatabase(context).chapterDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideReadHistoryDao(@ApplicationContext context: Context): ReadHistoryDao {
+        return ReadHistoryDatabase.getDatabase(context).readHistoryDao()
     }
 
 

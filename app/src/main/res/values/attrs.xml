@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="NovelTextView">
-        
+        <attr name="loaded" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="PageTurnView">
+        <attr name="animationType" format="enum">
+            <enum name="cover" value="0" />
+            <enum name="simulation" value="1" />
+            <enum name="translation" value="2" />
+        </attr>
     </declare-styleable>
 </resources>

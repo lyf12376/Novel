@@ -2,8 +2,8 @@ package com.test.novel.view.searchPage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.test.novel.database.readHistory.SearchHistory
-import com.test.novel.database.readHistory.SearchHistoryDao
+import com.test.novel.database.searchHistory.SearchHistory
+import com.test.novel.database.searchHistory.SearchHistoryDao
 import com.test.novel.network.search.SearchService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URLEncoder

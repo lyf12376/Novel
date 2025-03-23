@@ -27,15 +27,15 @@ private const val LOAD = "load"
 private const val INDEX = "pageIndex"
 private const val CHAPTER = "chapterIndex"
 
-
 class PageFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var text: String? = ""
     private var load: Boolean = false
-    private var title:String? = ""
-    private var pageIndex:Int = 0
-    private var chapterIndex:Int = 0
+    private var title: String? = ""
+    private var pageIndex: Int = 0
+    private var chapterIndex: Int = 0
     private lateinit var sharedViewModel: NovelFragmentViewModel
+    private var _binding: FragmentPageBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,109 +46,165 @@ class PageFragment : Fragment() {
             text = it.getString(TEXT)
             load = it.getBoolean(LOAD)
             pageIndex = it.getInt(INDEX)
+            chapterIndex = it.getInt(CHAPTER)
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        _binding = FragmentPageBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        return inflater.inflate(R.layout.fragment_page, container, false)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("TAG", "onViewCreated:")
-        val binding = FragmentPageBinding.bind(view)
         val novelText = binding.novelText
         val constraintSet = ConstraintSet()
         constraintSet.clone(binding.root)
+
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                sharedViewModel.state.collectLatest{
-                    val page = it.pages[pageIndex]
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                sharedViewModel.state.collectLatest { state ->
+                    if (pageIndex >= state.pages.size) return@collectLatest
+
+                    val page = state.pages[pageIndex]
                     load = page.load
                     title = page.title
                     chapterIndex = page.chapterIndex
-                    if (page.text != text){
+
+                    if (page.text != text) {
                         text = page.text
                         binding.title.text = title
                         novelText.text = text
                     }
-                    if (!page.showTitle){
+
+                    if (!page.showTitle) {
                         binding.title.visibility = View.GONE
-                        constraintSet.connect(binding.novelText.id,ConstraintSet.TOP,binding.topic.id,ConstraintSet.BOTTOM)
-                    }else{
+                        constraintSet.connect(binding.novelText.id, ConstraintSet.TOP, binding.topic.id, ConstraintSet.BOTTOM)
+                        constraintSet.applyTo(binding.root)
+                    } else {
+                        binding.title.visibility = View.VISIBLE
                         binding.title.post {
                             binding.title.text = title
                         }
                     }
+
                     binding.novelChapter.text = "第${chapterIndex}章"
                     binding.topicBack.setOnClickListener {
                         requireParentFragment().findNavController().popBackStack()
                     }
-                    novelText.post {
-                        val example = text
-                        novelText.text = example
-                        if (load)
-                            return@post
-                        var pageLines = SizeUtils.getPageLineCount(novelText)
-                        val maxLines = novelText.getLineCountCus()
-                        if (maxLines <= pageLines) {
-                            novelText.text = example
-                            return@post
+
+                    // Only process pagination if not already loaded
+                    if (!load) {
+                        novelText.post {
+                            paginateText()
                         }
-                        var lineEndOffset = novelText.getLineEnd(pageLines-1)
-                        //TODO BUGFIX
-                        val textShowInPage = example?.substring(0,lineEndOffset)
-                        var nextStartLine = pageLines - 1
-                        pageLines ++
-                        var nextEndLine = nextStartLine + pageLines
-                        novelText.text = textShowInPage
-                        val pageList = mutableListOf(PageState(chapterIndex = chapterIndex,showTitle = true,title = title?:"",text = textShowInPage?:"",load = true))
-                        while (lineEndOffset < example?.length!!){
-                            if (nextEndLine > maxLines - 1){
-                                val nextLineEndOffset = novelText.getLineEnd(maxLines - 1)
-                                val nextTextShowInPage = example.substring(lineEndOffset,nextLineEndOffset)
-                                pageList.add(PageState(chapterIndex = chapterIndex,title = "",text = nextTextShowInPage,load = true))
-                                break
-                            }
-                            else {
-                                val nextLineEndOffset = novelText.getLineEnd(nextEndLine)
-                                println("nextLineEndOffset:$nextLineEndOffset")
-                                val nextTextShowInPage =
-                                    example.substring(lineEndOffset, nextLineEndOffset)
-                                pageList.add(
-                                    PageState(
-                                        chapterIndex = chapterIndex,
-                                        showTitle = false,
-                                        title = title?:"",
-                                        text = nextTextShowInPage,
-                                        load = true
-                                    )
-                                )
-                                lineEndOffset = nextLineEndOffset
-                                nextEndLine += pageLines
-                            }
-                        }
-                        sharedViewModel.sendIntent(BookIntent.AddPages(pageList))
                     }
                 }
             }
         }
     }
 
+    private fun paginateText() {
+        val example = text ?: return
+        val novelText = binding.novelText
+
+        // Set the full text to calculate line metrics
+        novelText.text = example
+
+        val pageLines = SizeUtils.getPageLineCount(novelText)
+        val maxLines = novelText.getLineCountCus()
+
+        // If text fits on a single page, no need to paginate
+        if (maxLines <= pageLines) {
+            return
+        }
+
+        // Calculate first page content
+        val lineEndOffset = novelText.getLineEnd(pageLines - 1)
+        if (lineEndOffset <= 0 || lineEndOffset > example.length) return
+
+        val textShowInPage = example.substring(0, lineEndOffset)
+        novelText.text = textShowInPage
+
+        // Calculate additional pages
+        val titleLineCount = SizeUtils.getPageLineCount(binding.title)
+        val effectivePageLines = pageLines - (if (title.isNullOrEmpty()) 0 else titleLineCount)
+
+        val pageList = mutableListOf<PageState>()
+        pageList.add(
+            PageState(
+                chapterIndex = chapterIndex,
+                showTitle = true,
+                title = title ?: "",
+                text = textShowInPage,
+                load = true
+            )
+        )
+
+        var currentOffset = lineEndOffset
+        while (currentOffset < example.length) {
+            // Set remaining text to calculate next page
+            novelText.text = example.substring(currentOffset)
+
+            // Calculate how many lines will fit on next page
+            val nextPageLines = if (pageList.size == 1) effectivePageLines else pageLines
+
+            if (novelText.getLineCountCus() <= nextPageLines) {
+                // All remaining text fits on one page
+                pageList.add(
+                    PageState(
+                        chapterIndex = chapterIndex,
+                        showTitle = false,
+                        title = title ?: "",
+                        text = example.substring(currentOffset),
+                        load = true
+                    )
+                )
+                break
+            } else {
+                // Calculate text for next page
+                val nextLineEndOffset = novelText.getLineEnd(nextPageLines - 1)
+                if (nextLineEndOffset <= 0) break // Safety check
+
+                val nextPageText = example.substring(currentOffset, currentOffset + nextLineEndOffset)
+                pageList.add(
+                    PageState(
+                        chapterIndex = chapterIndex,
+                        showTitle = false,
+                        title = title ?: "",
+                        text = nextPageText,
+                        load = true
+                    )
+                )
+                currentOffset += nextLineEndOffset
+            }
+        }
+
+        // Restore current page text
+        novelText.text = textShowInPage
+
+        // Update ViewModel with new pages
+        sharedViewModel.sendIntent(BookIntent.AddPages(pageList))
+    }
+
     companion object {
         @JvmStatic
-        fun newInstance(pageState: PageState,pageIndex:Int) =
+        fun newInstance(pageState: PageState, pageIndex: Int) =
             PageFragment().apply {
                 arguments = Bundle().apply {
                     putString(TITLE, pageState.title)
                     putString(TEXT, pageState.text)
-                    putBoolean(LOAD,pageState.load)
-                    putInt(INDEX,pageIndex)
-                    putInt(CHAPTER,pageState.chapterIndex)
+                    putBoolean(LOAD, pageState.load)
+                    putInt(INDEX, pageIndex)
+                    putInt(CHAPTER, pageState.chapterIndex)
                 }
             }
     }
