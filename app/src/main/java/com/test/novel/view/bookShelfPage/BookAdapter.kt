@@ -67,7 +67,7 @@ class BookAdapter(private val fragment: Fragment, private val viewModel: BookShe
             if (isDeleteMode) {
                 holder.checkBox.isChecked = !holder.checkBox.isChecked
             }else{
-                val action = BookShelfFragmentDirections.actionBookShelfFragmentToNovelFragment(Json.encodeToString(BookBrief.serializer(),book.getBrief()))
+                val action = BookShelfFragmentDirections.actionBookShelfFragmentToReadFragment(Json.encodeToString(BookBrief.serializer(),book.getBrief()))
                 println(book)
                 println(Json.encodeToString(BookBrief.serializer(),book.getBrief()))
                 fragment.findNavController().navigate(action)

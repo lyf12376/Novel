@@ -229,7 +229,7 @@ class PageTurnView @JvmOverloads constructor(
      * 通知页面数据已更新
      * 当PageProvider的数据发生变化时调用此方法
      */
-    fun notifyDataChanged() {
+    private fun notifyDataChanged() {
         // 重新加载页面
         loadPages()
         // 通知监听器页面已更新
@@ -243,7 +243,7 @@ class PageTurnView @JvmOverloads constructor(
      * @param navigateToNewPage 是否立即导航到新添加的页面
      * @return 新页面的索引，如果添加失败则返回-1
      */
-    fun addPage(pageContent: String, navigateToNewPage: Boolean = true): Int {
+    fun addPage(pageContent: PageType, navigateToNewPage: Boolean = true): Int {
         val provider = pageProvider
 
         // 检查Provider是否支持动态添加页面
@@ -276,7 +276,7 @@ class PageTurnView @JvmOverloads constructor(
      * @param navigateToNewPage 是否立即导航到新添加的页面
      * @return 是否添加成功
      */
-    fun appendPage(pageContent: String, navigateToNewPage: Boolean = true): Boolean {
+    fun appendPage(pageContent: PageType, navigateToNewPage: Boolean = true): Boolean {
         return addPage(pageContent, navigateToNewPage) >= 0
     }
 

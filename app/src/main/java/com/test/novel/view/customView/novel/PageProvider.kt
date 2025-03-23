@@ -23,6 +23,6 @@ interface PageProvider {
      * @param pageContent 页面内容
      * @return 新页面的索引，添加失败则返回-1
      */
-    fun addPage(pageContent: String): Int
+    fun addPage(pageContent: PageType): Int
 
 }

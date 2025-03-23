@@ -11,4 +11,13 @@
             <enum name="translation" value="2" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="BatteryView">
+        <attr name="borderColor" format="color" />
+        <attr name="progressColor" format="color" />
+        <attr name="batteryLevel" format="integer" />
+        <attr name="borderWidth" format="dimension" />
+        <attr name="headHeight" format="dimension" />
+        <attr name="headWidth" format="dimension" />
+    </declare-styleable>
 </resources>

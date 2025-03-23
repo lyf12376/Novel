@@ -104,7 +104,7 @@ class PageFragment : Fragment() {
                     // Only process pagination if not already loaded
                     if (!load) {
                         novelText.post {
-                            paginateText()
+//                            paginateText()
                         }
                     }
                 }
@@ -112,88 +112,88 @@ class PageFragment : Fragment() {
         }
     }
 
-    private fun paginateText() {
-        val example = text ?: return
-        val novelText = binding.novelText
-
-        // Set the full text to calculate line metrics
-        novelText.text = example
-
-        val pageLines = SizeUtils.getPageLineCount(novelText)
-        val maxLines = novelText.getLineCountCus()
-
-        // If text fits on a single page, no need to paginate
-        if (maxLines <= pageLines) {
-            return
-        }
-
-        // Calculate first page content
-        val lineEndOffset = novelText.getLineEnd(pageLines - 1)
-        if (lineEndOffset <= 0 || lineEndOffset > example.length) return
-
-        val textShowInPage = example.substring(0, lineEndOffset)
-        novelText.text = textShowInPage
-
-        // Calculate additional pages
-        val titleLineCount = SizeUtils.getPageLineCount(binding.title)
-        val effectivePageLines = pageLines - (if (title.isNullOrEmpty()) 0 else titleLineCount)
-
-        val pageList = mutableListOf<PageState>()
-        pageList.add(
-            PageState(
-                chapterIndex = chapterIndex,
-                showTitle = true,
-                title = title ?: "",
-                text = textShowInPage,
-                load = true
-            )
-        )
-
-        var currentOffset = lineEndOffset
-        while (currentOffset < example.length) {
-            // Set remaining text to calculate next page
-            novelText.text = example.substring(currentOffset)
-
-            // Calculate how many lines will fit on next page
-            val nextPageLines = if (pageList.size == 1) effectivePageLines else pageLines
-
-            if (novelText.getLineCountCus() <= nextPageLines) {
-                // All remaining text fits on one page
-                pageList.add(
-                    PageState(
-                        chapterIndex = chapterIndex,
-                        showTitle = false,
-                        title = title ?: "",
-                        text = example.substring(currentOffset),
-                        load = true
-                    )
-                )
-                break
-            } else {
-                // Calculate text for next page
-                val nextLineEndOffset = novelText.getLineEnd(nextPageLines - 1)
-                if (nextLineEndOffset <= 0) break // Safety check
-
-                val nextPageText = example.substring(currentOffset, currentOffset + nextLineEndOffset)
-                pageList.add(
-                    PageState(
-                        chapterIndex = chapterIndex,
-                        showTitle = false,
-                        title = title ?: "",
-                        text = nextPageText,
-                        load = true
-                    )
-                )
-                currentOffset += nextLineEndOffset
-            }
-        }
-
-        // Restore current page text
-        novelText.text = textShowInPage
-
-        // Update ViewModel with new pages
-        sharedViewModel.sendIntent(BookIntent.AddPages(pageList))
-    }
+//    private fun paginateText() {
+//        val example = text ?: return
+//        val novelText = binding.novelText
+//
+//        // Set the full text to calculate line metrics
+//        novelText.text = example
+//
+//        val pageLines = SizeUtils.getPageLineCount(novelText)
+//        val maxLines = novelText.getLineCountCus()
+//
+//        // If text fits on a single page, no need to paginate
+//        if (maxLines <= pageLines) {
+//            return
+//        }
+//
+//        // Calculate first page content
+//        val lineEndOffset = novelText.getLineEnd(pageLines - 1)
+//        if (lineEndOffset <= 0 || lineEndOffset > example.length) return
+//
+//        val textShowInPage = example.substring(0, lineEndOffset)
+//        novelText.text = textShowInPage
+//
+//        // Calculate additional pages
+//        val titleLineCount = SizeUtils.getPageLineCount(binding.title)
+//        val effectivePageLines = pageLines - (if (title.isNullOrEmpty()) 0 else titleLineCount)
+//
+//        val pageList = mutableListOf<PageState>()
+//        pageList.add(
+//            PageState(
+//                chapterIndex = chapterIndex,
+//                showTitle = true,
+//                title = title ?: "",
+//                text = textShowInPage,
+//                load = true
+//            )
+//        )
+//
+//        var currentOffset = lineEndOffset
+//        while (currentOffset < example.length) {
+//            // Set remaining text to calculate next page
+//            novelText.text = example.substring(currentOffset)
+//
+//            // Calculate how many lines will fit on next page
+//            val nextPageLines = if (pageList.size == 1) effectivePageLines else pageLines
+//
+//            if (novelText.getLineCountCus() <= nextPageLines) {
+//                // All remaining text fits on one page
+//                pageList.add(
+//                    PageState(
+//                        chapterIndex = chapterIndex,
+//                        showTitle = false,
+//                        title = title ?: "",
+//                        text = example.substring(currentOffset),
+//                        load = true
+//                    )
+//                )
+//                break
+//            } else {
+//                // Calculate text for next page
+//                val nextLineEndOffset = novelText.getLineEnd(nextPageLines - 1)
+//                if (nextLineEndOffset <= 0) break // Safety check
+//
+//                val nextPageText = example.substring(currentOffset, currentOffset + nextLineEndOffset)
+//                pageList.add(
+//                    PageState(
+//                        chapterIndex = chapterIndex,
+//                        showTitle = false,
+//                        title = title ?: "",
+//                        text = nextPageText,
+//                        load = true
+//                    )
+//                )
+//                currentOffset += nextLineEndOffset
+//            }
+//        }
+//
+//        // Restore current page text
+//        novelText.text = textShowInPage
+//
+//        // Update ViewModel with new pages
+//        sharedViewModel.sendIntent(BookIntent.AddPages(pageList))
+//    }
 
     companion object {
         @JvmStatic
